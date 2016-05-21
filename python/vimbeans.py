@@ -90,7 +90,7 @@ class VimBeansProtocol(Protocol):
         # Find the buffer
         for _file in self.files:
             if self.files[_file] == buffer_name:
-                self.transport.write(str(_file) + ':insert/50 0 "' + content + '"\n')
+                self.transport.write(str(_file) + ':insert/50 0 "' + content.replace('\n', '\\n') + '"\n')
                 self.transport.write(str(_file) + ':initDone!0\n')
                 break
 
