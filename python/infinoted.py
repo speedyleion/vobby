@@ -16,7 +16,7 @@ class InfinotedProtocol(object):
     """
     TODO this needs to be examined, probably should be an actual protocol/factory setup
     """
-    def __init__(self):
+    def __init__(self, service):
         jid = JID('127.0.0.1')
         f = client.XMPPClientFactory(jid, '')
         f.addBootstrap(xmlstream.STREAM_CONNECTED_EVENT, self.connected)
@@ -26,6 +26,7 @@ class InfinotedProtocol(object):
         connector.connect()
         self.finished = Deferred()
         self.files = {}
+        self.service = service
 
     def rawDataIn(self, buf):
         log.msg("RECV: %s" % unicode(buf, 'utf-8').encode('ascii', 'replace'))
@@ -53,6 +54,8 @@ class InfinotedProtocol(object):
         xs.addObserver('/group/sync-end', self.sync_end)
         xs.addObserver('/group/user-rejoin', self.user_rejoin)
         xs.addObserver('/group/add-node', self.add_node)
+        xs.addObserver('/group/sync-segment', self.sync_segment)
+        xs.addObserver('/group/sync-user', self.sync_user)
 
     def subscribe(self, element):
         # TODO this needs to be more robust and really ack
@@ -88,6 +91,7 @@ class InfinotedProtocol(object):
         """
         Once we get the explore-end then we can send anotheer message.
         """
+        self.service.new_buffer(self.files.keys()[0].encode('ascii', 'ignore'))
         file_id = self.files.values()[0]
         self.xmlstream.send(u'<group publisher="you" name="InfDirectory">'
                             '<subscribe-session seq="2" id="' + str(file_id) + '"/>'
@@ -109,6 +113,20 @@ class InfinotedProtocol(object):
         """
         # TODO this should be updating the Vim buffer
         pass
+
+    def sync_user(self, element):
+        """
+        This should be storing/creating data about a user but forget it for now
+        """
+        pass
+
+    def sync_segment(self, element):
+        """
+        This is the message to update the buffer with what gobby has.
+        """
+        node = element.firstChildElement()
+        self.service.sync_vim(str(node).encode('ascii', 'ignore'),
+                              self.files.keys()[0].encode('ascii', 'ignore'))
 
     def sync_end(self, element):
         """

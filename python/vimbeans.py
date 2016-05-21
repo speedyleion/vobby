@@ -83,6 +83,33 @@ class VimBeansProtocol(Protocol):
         """
         log.msg('Lost connection')
 
+    def sync(self, content, buffer_name):
+        """
+        Synce the `contents` of `buffer_name`
+        """
+        # Find the buffer
+        for i, name in enumerate(self.files):
+            if name == buffer_name:
+                self.transport.write(str(i) + ':insert!50 0' + contents + '\n')
+                self.transport.write(str(i) + ':initDone!0\n')
+                break
+
+        # Probably need a finally here...
+
+    def new_buffer(self, filename):
+        """
+        Create a new buffer with name in Vim.
+        """
+        self.bufid += 1
+        self.files[self.bufid] = filename
+        self.transport.write(str(self.bufid) + ':create!0\n')
+        self.transport.write(str(self.bufid) + ':setCaretListener!0\n')
+        self.transport.write(str(self.bufid) + ':setModified!0 F\n')
+        self.transport.write(str(self.bufid) + ':setContentType!0\n')
+        self.transport.write(str(self.bufid) + ':startDocumentListen!0\n')
+        self.transport.write(str(self.bufid) + ':setTitle!0 ' + filename + '\n')
+        self.transport.write(str(self.bufid) + ':setFullName!0 ' + filename + '\n')
+
 
 class VimBeansFactory(ServerFactory):
     """

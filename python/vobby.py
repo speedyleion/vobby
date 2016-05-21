@@ -9,6 +9,7 @@ an infinoted server for the infintoed communication.
 
 # HACK FOR NOW THIS IS A TAC FILE
 
+from twisted.internet import reactor
 from twisted.application import internet, service
 from vimbeans import VimBeansFactory
 from infinoted import InfinotedProtocol
@@ -41,9 +42,27 @@ class VobbyService(service.Service):
             raise  # Some type error
 
     def startService(self):
-        # TODO this may need to be somewhere else.  Anyway kick off the ifinoted client.
-        self.infinoted = InfinotedProtocol()
         service.Service.startService(self)
+        # TODO this may need to be somewhere else.  Anyway kick off the ifinoted client.
+        # and now it's super hacky
+        reactor.callLater(5, self.start_infinoted)
+
+
+    def start_infinoted(self):
+        self.infinoted = InfinotedProtocol(self)
+
+    def sync_vim(self, contents, buffer_name):
+        """
+        This will sync the `contents` with the vim buffer associated with `buffer_name`
+        """
+        self.vimbeans.sync(contents, buffer_name)
+
+    def new_buffer(self, buffer_name):
+        """
+        Create a new buffer with name in Vim.
+        """
+        self.vimbeans.new_buffer(buffer_name)
+
 
 # configuration parameters
 port = 3219
