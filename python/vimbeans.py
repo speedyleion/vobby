@@ -88,10 +88,10 @@ class VimBeansProtocol(Protocol):
         Synce the `contents` of `buffer_name`
         """
         # Find the buffer
-        for i, name in enumerate(self.files):
-            if name == buffer_name:
-                self.transport.write(str(i) + ':insert!50 0' + contents + '\n')
-                self.transport.write(str(i) + ':initDone!0\n')
+        for _file in self.files:
+            if self.files[_file] == buffer_name:
+                self.transport.write(str(_file) + ':insert!50 0 "' + content + '"\n')
+                self.transport.write(str(_file) + ':initDone!0\n')
                 break
 
         # Probably need a finally here...
@@ -103,12 +103,12 @@ class VimBeansProtocol(Protocol):
         self.bufid += 1
         self.files[self.bufid] = filename
         self.transport.write(str(self.bufid) + ':create!0\n')
+        self.transport.write(str(self.bufid) + ':setTitle!0 "' + filename + '"\n')
+        self.transport.write(str(self.bufid) + ':setFullName!0 "' + filename + '"\n')
         self.transport.write(str(self.bufid) + ':setCaretListener!0\n')
         self.transport.write(str(self.bufid) + ':setModified!0 F\n')
         self.transport.write(str(self.bufid) + ':setContentType!0\n')
         self.transport.write(str(self.bufid) + ':startDocumentListen!0\n')
-        self.transport.write(str(self.bufid) + ':setTitle!0 ' + filename + '\n')
-        self.transport.write(str(self.bufid) + ':setFullName!0 ' + filename + '\n')
 
 
 class VimBeansFactory(ServerFactory):
