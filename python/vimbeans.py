@@ -96,6 +96,21 @@ class VimBeansProtocol(Protocol):
 
         # Probably need a finally here...
 
+    def insert(self, content, offset, buffer_name):
+        """
+        This will insert text into the given buffer.
+
+        Args:
+            content (string): Data to insert.  Often this is one character at a time.
+            offset (int): Byte offset into the buffer.
+            buffer_name (string): The buffer name.
+
+        """
+        for _file in self.files:
+            if self.files[_file] == buffer_name:
+                self.transport.write(str(_file) + ':insert/20 ' + str(offset) + ' "' +
+                                     content.replace('\n', '\\n') + '"\n')
+
     def new_buffer(self, filename):
         """
         Create a new buffer with name in Vim.

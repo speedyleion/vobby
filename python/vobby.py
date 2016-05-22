@@ -47,7 +47,6 @@ class VobbyService(service.Service):
         # and now it's super hacky
         reactor.callLater(5, self.start_infinoted)
 
-
     def start_infinoted(self):
         self.infinoted = InfinotedProtocol(self)
 
@@ -56,6 +55,9 @@ class VobbyService(service.Service):
         This will sync the `contents` with the vim buffer associated with `buffer_name`
         """
         self.vimbeans.sync(contents, buffer_name)
+
+    def insert_vim(self, content, offset, buffer_name):
+        self.vimbeans.insert(content, offset, buffer_name)
 
     def new_buffer(self, buffer_name):
         """

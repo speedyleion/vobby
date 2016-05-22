@@ -56,6 +56,18 @@ class InfinotedProtocol(object):
         xs.addObserver('/group/add-node', self.add_node)
         xs.addObserver('/group/sync-segment', self.sync_segment)
         xs.addObserver('/group/sync-user', self.sync_user)
+        xs.addObserver('/group/request/insert-caret', self.insert)
+
+    def insert(self, element):
+        """
+        This will send an insert text command to teh associated Vim instance.
+
+        """
+        insert_node = element.firstChildElement().firstChildElement()
+        offset = insert_node['pos']
+        self.service.insert_vim(str(insert_node).encode('ascii', 'ignore'), int(offset),
+                              self.files.keys()[0].encode('ascii', 'ignore'))
+
 
     def subscribe(self, element):
         # TODO this needs to be more robust and really ack
