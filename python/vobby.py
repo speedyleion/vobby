@@ -59,6 +59,9 @@ class VobbyService(service.Service):
     def insert_vim(self, content, offset, buffer_name):
         self.vimbeans.insert(content, offset, buffer_name)
 
+    def delete_vim(self, offset, length, buffer_name):
+        self.vimbeans.delete(offset, length, buffer_name)
+
     def new_buffer(self, buffer_name):
         """
         Create a new buffer with name in Vim.

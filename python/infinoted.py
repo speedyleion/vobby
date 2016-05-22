@@ -57,6 +57,16 @@ class InfinotedProtocol(object):
         xs.addObserver('/group/sync-segment', self.sync_segment)
         xs.addObserver('/group/sync-user', self.sync_user)
         xs.addObserver('/group/request/insert-caret', self.insert)
+        xs.addObserver('/group/request/delete-caret', self.delete)
+
+    def delete(self, element):
+        delete_node = element.firstChildElement().firstChildElement()
+        offset = int(delete_node['pos'])
+        length = int(delete_node['len'])
+        self.service.delete_vim(offset, length,
+                              self.files.keys()[0].encode('ascii', 'ignore'))
+
+
 
     def insert(self, element):
         """

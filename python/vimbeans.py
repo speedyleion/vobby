@@ -96,6 +96,15 @@ class VimBeansProtocol(Protocol):
 
         # Probably need a finally here...
 
+    def delete(self, offset, length, buffer_name):
+        """
+        Deletes part of the buffer
+        """
+        for _file in self.files:
+            if self.files[_file] == buffer_name:
+                self.transport.write(str(_file) + ':remove/10 ' + str(offset) + ' ' +
+                                     str(length) + '\n')
+
     def insert(self, content, offset, buffer_name):
         """
         This will insert text into the given buffer.
