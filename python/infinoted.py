@@ -66,8 +66,6 @@ class InfinotedProtocol(object):
         self.service.delete_vim(offset, length,
                               self.files.keys()[0].encode('ascii', 'ignore'))
 
-
-
     def insert(self, element):
         """
         This will send an insert text command to teh associated Vim instance.
@@ -84,7 +82,7 @@ class InfinotedProtocol(object):
         self.xmlstream.send(u'<group publisher="you" name="InfDirectory">'
                             '<subscribe-ack/></group>')
 
-    def insert_text(self, position, text):
+    def insert_text(self, text, position, buffer_name):
         """
         This will insert text into the subscribed buffer.
 
@@ -103,7 +101,7 @@ class InfinotedProtocol(object):
 
         """
         self.xmlstream.send(u'<group publisher="you" name="' + self.session + '">'
-                            '<request user="1" time="">'
+                            '<request user="' + self.user_id + '" time="">'
                             '<insert-caret pos="' + str(position) + '">' + text +
                             '</insert-caret>'
                             '</request>'

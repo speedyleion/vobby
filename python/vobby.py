@@ -56,6 +56,9 @@ class VobbyService(service.Service):
         """
         self.vimbeans.sync(contents, buffer_name)
 
+    def insert_gobby(self, content, offset, buffer_name):
+        self.infinoted.insert_text(content, offset, buffer_name)
+
     def insert_vim(self, content, offset, buffer_name):
         self.vimbeans.insert(content, offset, buffer_name)
 

@@ -41,9 +41,12 @@ class VimBeansProtocol(Protocol):
 
             return
 
+        if data.startswith('AUTH'):
+            return
+
         # If we got here then we are looking at a specific buffer
         for line in data.splitlines():
-            sentid = line[0]
+            sentid = int(line[0])
             command = line[2:]
             if sentid in self.files:
                 # TODO we always seem to get remove and insert in the same run, so probably
@@ -55,7 +58,8 @@ class VimBeansProtocol(Protocol):
                     pass
 
                 if command.startswith('insert'):
-                    pass
+                    _, offset, content = command.split(' ', 2)
+                    self.service.insert_gobby(content[1:-1], int(offset), self.files[sentid])
 
     def watchFile(self, filename):
         """
