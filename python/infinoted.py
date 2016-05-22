@@ -82,6 +82,22 @@ class InfinotedProtocol(object):
         self.xmlstream.send(u'<group publisher="you" name="InfDirectory">'
                             '<subscribe-ack/></group>')
 
+    def delete_text(self, offset, length, buffer_name):
+        """TODO: Docstring for delete_text.
+
+        Args:
+            offset (TODO): TODO
+            length (TODO): TODO
+            buffer_name (TODO): TODO
+
+        Returns: TODO
+
+        """
+        self.xmlstream.send(u'<group publisher="you" name="' + self.session + '">'
+                            '<request user="' + self.user_id + '" time="">'
+                            '<delete-caret pos="' + str(offset) + '" len="' + str(length)
+                            + '"/></request></group>')
+
     def insert_text(self, text, position, buffer_name):
         """
         This will insert text into the subscribed buffer.

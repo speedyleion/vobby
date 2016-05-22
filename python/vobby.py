@@ -59,6 +59,9 @@ class VobbyService(service.Service):
     def insert_gobby(self, content, offset, buffer_name):
         self.infinoted.insert_text(content, offset, buffer_name)
 
+    def delete_gobby(self, offset, length, buffer_name):
+        self.infinoted.delete_text(offset, length, buffer_name)
+
     def insert_vim(self, content, offset, buffer_name):
         self.vimbeans.insert(content, offset, buffer_name)
 

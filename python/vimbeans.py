@@ -55,7 +55,8 @@ class VimBeansProtocol(Protocol):
                 # Vim uses byte offsets into buffers.  May need to handle utf-8 vs ascii...
 
                 if command.startswith('remove'):
-                    pass
+                    _, offset, length = command.split(' ', 2)
+                    self.service.delete_gobby(int(offset), int(length), self.files[sentid])
 
                 if command.startswith('insert'):
                     _, offset, content = command.split(' ', 2)
