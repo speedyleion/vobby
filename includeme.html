@@ -31,7 +31,7 @@
 
   
     <link rel="top" title="Vobby 0.1 documentation" href="index.html"/>
-        <link rel="prev" title="Welcome to Vobby’s documentation!" href="index.html"/> 
+        <link rel="prev" title="Indices and tables" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -72,8 +72,15 @@
           
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Vobby</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#status">Status</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#getting-this-working-for-testing">Getting this working for testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#status">Status</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#valid-quick-start">Valid Quick Start</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started-not-real-yet">Getting Started (Not Real Yet...)</a></li>
 </ul>
 </li>
 </ul>
@@ -115,26 +122,89 @@
             
   <div class="section" id="vobby">
 <h1>Vobby<a class="headerlink" href="#vobby" title="Permalink to this headline">¶</a></h1>
-<p>This is a Vim plug-in which communicates with infinoted servers.</p>
 <p>V(im)obby.</p>
+<p>This is a Vim plug-in to enable collaborative code editing through the
+<a class="reference external" href="https://gobby.github.io/">infinoted</a> protocol.  The link is actually to Gobby
+but that&#8217;s because it&#8217;s the main client using infinoted and also usually
+contains an infinoted server.</p>
+<p>TODO insert gratuitous GIF here.</p>
 <div class="section" id="status">
 <h2>Status<a class="headerlink" href="#status" title="Permalink to this headline">¶</a></h2>
-<p>This is very early prototype development.  The code base is ugly and it&#8217;s just
-there more as a proof of concept.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Most of this documentation is how the author envisions the final
+product working.  In fact currently there is little to no actual
+implementation. Until this warning goes away the only valid documentation is
+the quick instructions in this section.</p>
 </div>
-<div class="section" id="getting-this-working-for-testing">
-<h2>Getting this working for testing<a class="headerlink" href="#getting-this-working-for-testing" title="Permalink to this headline">¶</a></h2>
-<p>This currently only connects to localhost and the default ports for vim-netbeans
-and infinoted.</p>
-<ul class="simple">
-<li>Start an infinoted server.</li>
-<li>Start Vim</li>
-<li>Do &#8221;:nbstart&#8221; inside of Vim</li>
-<li>In the repo do &#8221;./python/run.py&#8221;</li>
-<li>Give it a few seconds. Vim will connect ot the first buffer it finds.  Look at</li>
+<div class="section" id="valid-quick-start">
+<h3>Valid Quick Start<a class="headerlink" href="#valid-quick-start" title="Permalink to this headline">¶</a></h3>
+<p>The current code that exists is mainly just a proof of concept.  However if you
+wish to take the plunge and test it out the following instructions should get
+you there.</p>
+<p>These steps only connect to localhost and the default ports of 6523 for
+Infinoted and 3219 for Vim</p>
+<ul>
+<li><p class="first">Start an infinoted server.</p>
+</li>
+<li><dl class="first docutils">
+<dt>Start Gobby and connect to the infinoted server.</dt>
+<dd><ul class="first last simple">
+<li>Ensure there is a file at the root of the infinoted server.</li>
+<li>Type some things in the file at the root of the server.</li>
 </ul>
-<p>the name in Vim and edit that same file in Gobby you should be able to edit
-from either side.</p>
+</dd>
+</dl>
+</li>
+<li><p class="first">Start Vim</p>
+</li>
+<li><p class="first">Do &#8221;:nbstart&#8221; inside of Vim</p>
+</li>
+<li><p class="first">In the repo run the script <cite>./python/run.py</cite></p>
+</li>
+<li><p class="first">Give it a few seconds. Vim will connect to the first buffer it finds.</p>
+</li>
+</ul>
+<p>You should then be able to edit the file from either side.</p>
+</div>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Simply clone this repo where it can be accessed and sourced by Vim.</p>
+<p>Like most Vim plug-ins the suggestion is to use one of the great plug-in
+managers:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/tpope/vim-pathogen">Pathogen</a></li>
+<li><a class="reference external" href="https://github.com/VundleVim/Vundle.vim">Vundle</a></li>
+<li><a class="reference external" href="https://github.com/MarcWeber/vim-addon-manager">VAM</a></li>
+<li>And many more (on channel four).</li>
+</ul>
+<div class="section" id="dependencies">
+<h3>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Vim compiled with python support. Doing the following in Vim
+<code class="docutils literal"><span class="pre">:echo</span> <span class="pre">has('python')</span></code> should display a nice <code class="docutils literal"><span class="pre">1</span></code>.
+Python 3 may work, but this author is stuck back on 2.7 so has only tested
+that out.</li>
+<li>The python package Twisted.  On most machines <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">twisted</span></code>.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="getting-started-not-real-yet">
+<h2>Getting Started (Not Real Yet...)<a class="headerlink" href="#getting-started-not-real-yet" title="Permalink to this headline">¶</a></h2>
+<p>Start up Vim and run <code class="docutils literal"><span class="pre">:VobbyConnect</span> <span class="pre">&lt;ip_address&gt;[:port]</span></code> and this will connect
+to the Infinoted server at the given ip address and port.  If the port is
+omitted this will use the default of 6523.</p>
+<p>Run <code class="docutils literal"><span class="pre">:VobbyBrowse</span></code> to create a vertical split showing the list of files and
+directories available on the Infinoted server.  The listing should look similar
+to the super awesome <a class="reference external" href="https://github.com/scrooloose/nerdtree">nerdtree</a>
+plug-in.</p>
+<p>Move the cursor through the list and hit &lt;CR&gt;, &#8220;Enter&#8221; for those new to Vim, on
+a file and that file should be opened up in the current buffer.  The file will
+be populated with the contents from the Infinoted server.</p>
+<p>Begin typing and the changes will be communicated back to the server.  If
+someone else is also editing the buffer their changes will appear in the Vim
+buffer as they occur.</p>
 </div>
 </div>
 
@@ -145,7 +215,7 @@ from either side.</p>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="index.html" class="btn btn-neutral" title="Welcome to Vobby’s documentation!" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral" title="Indices and tables" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
