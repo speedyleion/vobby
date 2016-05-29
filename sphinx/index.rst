@@ -6,6 +6,8 @@
 .. toctree::
 
    includeme
+   ide_interfaces
+   network
 
 
 Indices and tables

@@ -39,6 +39,12 @@ Infinoted and 3219 for Vim
 
 You should then be able to edit the file from either side.
 
+License
+-------
+
+This is licensed using the `unlicense <http://unlicense.org>`_.  Basically do
+what you will with this as long has you have fun.
+
 Installation
 ------------
 
@@ -52,17 +58,15 @@ managers:
 - `VAM <https://github.com/MarcWeber/vim-addon-manager>`_
 - And many more (on channel four).
 
-
 Dependencies
 ^^^^^^^^^^^^
 
 - Vim compiled with python support. Doing the following in Vim 
   ``:echo has('python')`` should display a nice ``1``.
-  Python 3 may work, but this author is stuck back on 2.7 so has only tested
-  that out.
+  Python 3 may work, but this author is stuck back on 2.7 so hasn't ensured
+  Python 3 compatibility.
 
 - The python package Twisted.  On most machines ``pip install twisted``.
-
 
 Getting Started (Not Real Yet...)
 ---------------------------------
@@ -85,5 +89,10 @@ someone else is also editing the buffer their changes will appear in the Vim
 buffer as they occur.
 
 
+Contributing
+------------
 
+The repo is here https://github.com/speedyleion/vobby.  Submit pull requests.
 
+For general documentation on the internals start here,
+https://speedyleion.github.io/vobby
