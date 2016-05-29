@@ -1,0 +1,300 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>IDE Interfaces &mdash; Vobby 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Vobby 0.1 documentation" href="index.html"/>
+        <link rel="next" title="Network Communication" href="network.html"/>
+        <link rel="prev" title="Vobby" href="includeme.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> Vobby
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="includeme.html">Vobby</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="includeme.html#status">Status</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="includeme.html#valid-quick-start">Valid Quick Start</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="includeme.html#license">License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="includeme.html#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="includeme.html#dependencies">Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="includeme.html#getting-started-not-real-yet">Getting Started (Not Real Yet...)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="includeme.html#contributing">Contributing</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">IDE Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="network.html">Network Communication</a></li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Vobby</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>IDE Interfaces</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/ide_interfaces.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="ide-interfaces">
+<h1>IDE Interfaces<a class="headerlink" href="#ide-interfaces" title="Permalink to this headline">¶</a></h1>
+<p>Vobby utilizes a generic interface for communicating between different
+IDE interfaces.  This is done by implementing the <code class="xref py py-class docutils literal"><span class="pre">FileBuffer</span></code> class.
+This extra abstraction allows for possible expansion to other protocols outside
+of Infinoted as well as possibly using the Vim/Netbeans implementation
+elsewhere.</p>
+<dl class="class">
+<dt id="file_buffer.FileBuffer">
+<em class="property">class </em><code class="descclassname">file_buffer.</code><code class="descname">FileBuffer</code><a class="reference internal" href="_modules/file_buffer.html#FileBuffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_buffer.FileBuffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>This is an abstract class representing a file buffer for an editor.  The
+idea is that this class provides a generic interface for describing buffer
+modifications without having to know the nitty gritty details of a specific
+editor interface.</p>
+<p>TODO: create image of interface</p>
+<dl class="method">
+<dt id="file_buffer.FileBuffer.delete">
+<code class="descname">delete</code><span class="sig-paren">(</span><em>offset</em>, <em>length</em>, <em>user=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/file_buffer.html#FileBuffer.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_buffer.FileBuffer.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will delete the <cite>length</cite> number of characters from the <cite>offset</cite> in
+this buffer.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>offset</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; This is the number of characters into the buffer to
+place <cite>content</cite> at.  This is a 0 based value.
+Newlines are considered one character.  TODO: do we
+need to worry about &#8216;rn&#8217;?</li>
+<li><strong>length</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; This is the number of characters to remove from the
+buffer.  Newlines and tabs count as one character
+each.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Kwargs:</dt>
+<dd><dl class="first last docutils">
+<dt>user (Unknown): This is the user who is deleting the <cite>content</cite>.</dt>
+<dd>The main purpose of this is for editor interfaces
+that support highlighting text by different users as
+different colors.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="file_buffer.FileBuffer.insert">
+<code class="descname">insert</code><span class="sig-paren">(</span><em>content</em>, <em>offset</em>, <em>user=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/file_buffer.html#FileBuffer.insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_buffer.FileBuffer.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will insert <cite>content</cite> into this buffer at <cite>offset</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>content</strong> (<a class="reference external" href="https://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; This is the string to insert.  It can be one
+character, <code class="docutils literal"><span class="pre">a</span></code> or it can be a full string
+<code class="docutils literal"><span class="pre">Hello</span> <span class="pre">this</span> <span class="pre">is</span> <span class="pre">my</span> <span class="pre">string</span></code>.</li>
+<li><strong>offset</strong> (<a class="reference external" href="https://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; This is the number of characters into the buffer to
+place <cite>content</cite> at.  This is a 0 based value.
+Newlines are considered one character.  TODO: do we
+need to worry about &#8216;rn&#8217;?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Kwargs:</dt>
+<dd><dl class="first last docutils">
+<dt>user (Unknown): This is the user who is inserting the <cite>content</cite>.</dt>
+<dd>The main purpose of this is for editor interfaces
+that support highlighting text by different users as
+different colors.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="file_buffer.FileBuffer.sync">
+<code class="descname">sync</code><span class="sig-paren">(</span><em>content</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/file_buffer.html#FileBuffer.sync"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#file_buffer.FileBuffer.sync" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is usually used on initial creation/editing of a shared buffer.
+<cite>content</cite> will be the entire contents of the buffer.  Most
+implementations will probably remove all of the previous contents in the
+buffer and replace them with this new <cite>content</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>content</strong> (<a class="reference external" href="https://docs.python.org/library/string.html#module-string" title="(in Python v2.7)"><em>string</em></a>) &#8211; The entire contents of the buffer.</td>
+</tr>
+</tbody>
+</table>
+<p>TODO may need to see about making this a list of contents so that it can
+have a user markup...???</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="network.html" class="btn btn-neutral float-right" title="Network Communication" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="includeme.html" class="btn btn-neutral" title="Vobby" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Me.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

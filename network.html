@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Search &mdash; Vobby 0.1 documentation</title>
+  <title>Network Communication &mdash; Vobby 0.1 documentation</title>
   
 
   
@@ -30,7 +30,8 @@
   
 
   
-    <link rel="top" title="Vobby 0.1 documentation" href="index.html"/> 
+    <link rel="top" title="Vobby 0.1 documentation" href="index.html"/>
+        <link rel="prev" title="IDE Interfaces" href="ide_interfaces.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -55,7 +56,7 @@
 
         
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="#" method="get">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -69,7 +70,7 @@
         
           
           
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="includeme.html">Vobby</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="includeme.html#status">Status</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="includeme.html#valid-quick-start">Valid Quick Start</a></li>
@@ -85,7 +86,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ide_interfaces.html">IDE Interfaces</a></li>
-<li class="toctree-l1"><a class="reference internal" href="network.html">Network Communication</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Network Communication</a></li>
 </ul>
 
           
@@ -110,8 +111,12 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li></li>
+    <li>Network Communication</li>
       <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/network.txt" rel="nofollow"> View page source</a>
+          
         
       </li>
   </ul>
@@ -119,22 +124,32 @@
 </div>
           <div role="main" class="document">
             
-  <noscript>
-  <div id="fallback" class="admonition warning">
-    <p class="last">
-      Please activate JavaScript to enable the search
-      functionality.
-    </p>
-  </div>
-  </noscript>
+  <div class="section" id="network-communication">
+<h1>Network Communication<a class="headerlink" href="#network-communication" title="Permalink to this headline">¶</a></h1>
+<p>Vobby is targeted at IDE interfaces that can communicate via network
+sockets.</p>
+<p>To facilitate this communication <a class="reference external" href="https://twistedmatrix.com/trac/">Twisted</a> is
+used.  The hope is that using twisted it will make it easy to add future IDE
+interfaces.  With the power of Twisted comes some complexity.  The following are
+some suggested reading to help get a basic understanding of Twisted:</p>
+<ul class="simple">
+<li>Dave Peticolas&#8217; excellent tutorial
+<a class="reference external" href="http://krondo.com/an-introduction-to-asynchronous-programming-and-twisted/">http://krondo.com/an-introduction-to-asynchronous-programming-and-twisted/</a></li>
+<li>Twisted official developer guides
+<a class="reference external" href="http://twistedmatrix.com/documents/current/core/howto/index.html">http://twistedmatrix.com/documents/current/core/howto/index.html</a></li>
+</ul>
+</div>
 
-  
-  <div id="search-results">
-  
-  </div>
 
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="ide_interfaces.html" class="btn btn-neutral" title="IDE Interfaces" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
@@ -171,7 +186,6 @@
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="_static/searchtools.js"></script>
 
   
 
@@ -187,14 +201,7 @@
           SphinxRtdTheme.StickyNav.enable();
       });
   </script>
-  
-  <script type="text/javascript">
-    jQuery(function() { Search.loadIndex("searchindex.js"); });
-  </script>
-  
-  <script type="text/javascript" id="searchindexloader"></script>
    
-
 
 </body>
 </html>

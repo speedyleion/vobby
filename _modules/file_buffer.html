@@ -1,0 +1,270 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>file_buffer &mdash; Vobby 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Vobby 0.1 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="../index.html" class="icon icon-home"> Vobby
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../includeme.html">Vobby</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../includeme.html#status">Status</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../includeme.html#valid-quick-start">Valid Quick Start</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../includeme.html#license">License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../includeme.html#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../includeme.html#dependencies">Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../includeme.html#getting-started-not-real-yet">Getting Started (Not Real Yet...)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../includeme.html#contributing">Contributing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ide_interfaces.html">IDE Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../network.html">Network Communication</a></li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Vobby</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      
+    <li>file_buffer</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <h1>Source code for file_buffer</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Generic file buffer interface</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">abc</span>
+
+
+<div class="viewcode-block" id="FileBuffer"><a class="viewcode-back" href="../ide_interfaces.html#file_buffer.FileBuffer">[docs]</a><span class="k">class</span> <span class="nc">FileBuffer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is an abstract class representing a file buffer for an editor.  The</span>
+<span class="sd">    idea is that this class provides a generic interface for describing buffer</span>
+<span class="sd">    modifications without having to know the nitty gritty details of a specific</span>
+<span class="sd">    editor interface.</span>
+
+<span class="sd">    TODO: create image of interface</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span>
+
+    <span class="nd">@abc.abstractmethod</span>
+<div class="viewcode-block" id="FileBuffer.insert"><a class="viewcode-back" href="../ide_interfaces.html#file_buffer.FileBuffer.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This will insert `content` into this buffer at `offset`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            content (string): This is the string to insert.  It can be one</span>
+<span class="sd">                              character, ``a`` or it can be a full string</span>
+<span class="sd">                              ``Hello this is my string``.</span>
+
+<span class="sd">            offset (int): This is the number of characters into the buffer to</span>
+<span class="sd">                          place `content` at.  This is a 0 based value.</span>
+<span class="sd">                          Newlines are considered one character.  TODO: do we</span>
+<span class="sd">                          need to worry about &#39;\\r\\n&#39;?</span>
+
+<span class="sd">        Kwargs:</span>
+<span class="sd">            user (Unknown): This is the user who is inserting the `content`.</span>
+<span class="sd">                            The main purpose of this is for editor interfaces</span>
+<span class="sd">                            that support highlighting text by different users as</span>
+<span class="sd">                            different colors.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span></div>
+
+    <span class="nd">@abc.abstractmethod</span>
+<div class="viewcode-block" id="FileBuffer.delete"><a class="viewcode-back" href="../ide_interfaces.html#file_buffer.FileBuffer.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This will delete the `length` number of characters from the `offset` in</span>
+<span class="sd">        this buffer.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            offset (int): This is the number of characters into the buffer to</span>
+<span class="sd">                          place `content` at.  This is a 0 based value.</span>
+<span class="sd">                          Newlines are considered one character.  TODO: do we</span>
+<span class="sd">                          need to worry about &#39;\\r\\n&#39;?</span>
+
+<span class="sd">            length (int): This is the number of characters to remove from the</span>
+<span class="sd">                          buffer.  Newlines and tabs count as one character</span>
+<span class="sd">                          each.</span>
+
+<span class="sd">        Kwargs:</span>
+<span class="sd">            user (Unknown): This is the user who is deleting the `content`.</span>
+<span class="sd">                            The main purpose of this is for editor interfaces</span>
+<span class="sd">                            that support highlighting text by different users as</span>
+<span class="sd">                            different colors.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span></div>
+
+    <span class="nd">@abc.abstractmethod</span>
+<div class="viewcode-block" id="FileBuffer.sync"><a class="viewcode-back" href="../ide_interfaces.html#file_buffer.FileBuffer.sync">[docs]</a>    <span class="k">def</span> <span class="nf">sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is usually used on initial creation/editing of a shared buffer.</span>
+<span class="sd">        `content` will be the entire contents of the buffer.  Most</span>
+<span class="sd">        implementations will probably remove all of the previous contents in the</span>
+<span class="sd">        buffer and replace them with this new `content`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            content (string): The entire contents of the buffer.</span>
+
+<span class="sd">        TODO may need to see about making this a list of contents so that it can</span>
+<span class="sd">        have a user markup...???</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span></div></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Me.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -31,6 +31,7 @@
 
   
     <link rel="top" title="Vobby 0.1 documentation" href="index.html"/>
+        <link rel="next" title="IDE Interfaces" href="ide_interfaces.html"/>
         <link rel="prev" title="Indices and tables" href="index.html"/> 
 
   
@@ -76,13 +77,17 @@
 <li class="toctree-l3"><a class="reference internal" href="#valid-quick-start">Valid Quick Start</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#getting-started-not-real-yet">Getting Started (Not Real Yet...)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="ide_interfaces.html">IDE Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="network.html">Network Communication</a></li>
 </ul>
 
           
@@ -168,6 +173,11 @@ Infinoted and 3219 for Vim</p>
 <p>You should then be able to edit the file from either side.</p>
 </div>
 </div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>This is licensed using the <a class="reference external" href="http://unlicense.org">unlicense</a>.  Basically do
+what you will with this as long has you have fun.</p>
+</div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>Simply clone this repo where it can be accessed and sourced by Vim.</p>
@@ -184,8 +194,8 @@ managers:</p>
 <ul class="simple">
 <li>Vim compiled with python support. Doing the following in Vim
 <code class="docutils literal"><span class="pre">:echo</span> <span class="pre">has('python')</span></code> should display a nice <code class="docutils literal"><span class="pre">1</span></code>.
-Python 3 may work, but this author is stuck back on 2.7 so has only tested
-that out.</li>
+Python 3 may work, but this author is stuck back on 2.7 so hasn&#8217;t ensured
+Python 3 compatibility.</li>
 <li>The python package Twisted.  On most machines <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">twisted</span></code>.</li>
 </ul>
 </div>
@@ -206,6 +216,12 @@ be populated with the contents from the Infinoted server.</p>
 someone else is also editing the buffer their changes will appear in the Vim
 buffer as they occur.</p>
 </div>
+<div class="section" id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
+<p>The repo is here <a class="reference external" href="https://github.com/speedyleion/vobby">https://github.com/speedyleion/vobby</a>.  Submit pull requests.</p>
+<p>For general documentation on the internals start here,
+<a class="reference external" href="https://speedyleion.github.io/vobby">https://speedyleion.github.io/vobby</a></p>
+</div>
 </div>
 
 
@@ -213,6 +229,8 @@ buffer as they occur.</p>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ide_interfaces.html" class="btn btn-neutral float-right" title="IDE Interfaces" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral" title="Indices and tables" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
