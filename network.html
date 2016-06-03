@@ -31,6 +31,7 @@
 
   
     <link rel="top" title="Vobby 0.1 documentation" href="index.html"/>
+        <link rel="next" title="Infinoted" href="infinoted.html"/>
         <link rel="prev" title="IDE Interfaces" href="ide_interfaces.html"/> 
 
   
@@ -86,7 +87,14 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ide_interfaces.html">IDE Interfaces</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Network Communication</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Network Communication</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#vobby-service">Vobby Service</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="infinoted.html">Infinoted</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="infinoted.html#jabber">Jabber</a></li>
+</ul>
+</li>
 </ul>
 
           
@@ -129,8 +137,9 @@
 <p>Vobby is targeted at IDE interfaces that can communicate via network
 sockets.</p>
 <p>To facilitate this communication <a class="reference external" href="https://twistedmatrix.com/trac/">Twisted</a> is
-used.  The hope is that using twisted it will make it easy to add future IDE
-interfaces.  With the power of Twisted comes some complexity.  The following are
+used.  The hope is that using twisted it will make this scalable and it will be
+easier to add future IDE interfaces.</p>
+<p>With the power of Twisted comes some complexity.  The following are
 some suggested reading to help get a basic understanding of Twisted:</p>
 <ul class="simple">
 <li>Dave Peticolas&#8217; excellent tutorial
@@ -138,6 +147,22 @@ some suggested reading to help get a basic understanding of Twisted:</p>
 <li>Twisted official developer guides
 <a class="reference external" href="http://twistedmatrix.com/documents/current/core/howto/index.html">http://twistedmatrix.com/documents/current/core/howto/index.html</a></li>
 </ul>
+<div class="section" id="vobby-service">
+<h2>Vobby Service<a class="headerlink" href="#vobby-service" title="Permalink to this headline">¶</a></h2>
+<p>The network communication is launched as a server for Vim instances to talk to,
+and as a client for an Infinoted/Gobby server.</p>
+<p>For lack of a better term we&#8217;ll call this process the &#8220;Vobby Service&#8221;.</p>
+<p>The Vobby Service is launched as a background python process which will listen
+for connections from Vim instances and, depending on the desired interaction,
+make connections to Infinoted servers.</p>
+<p>The Vobby Service will be shut down when the last Vim instance closes its
+connection.</p>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">Consider if it should be some kind of optional start-up to be able
+to stay running when passed the proper flag.</p>
+</div>
+</div>
 </div>
 
 
@@ -145,6 +170,8 @@ some suggested reading to help get a basic understanding of Twisted:</p>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="infinoted.html" class="btn btn-neutral float-right" title="Infinoted" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="ide_interfaces.html" class="btn btn-neutral" title="IDE Interfaces" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>

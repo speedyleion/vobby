@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Search &mdash; Vobby 0.1 documentation</title>
+  <title>Infinoted &mdash; Vobby 0.1 documentation</title>
   
 
   
@@ -30,7 +30,8 @@
   
 
   
-    <link rel="top" title="Vobby 0.1 documentation" href="index.html"/> 
+    <link rel="top" title="Vobby 0.1 documentation" href="index.html"/>
+        <link rel="prev" title="Network Communication" href="network.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -55,7 +56,7 @@
 
         
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="#" method="get">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -69,7 +70,7 @@
         
           
           
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="includeme.html">Vobby</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="includeme.html#status">Status</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="includeme.html#valid-quick-start">Valid Quick Start</a></li>
@@ -89,8 +90,8 @@
 <li class="toctree-l2"><a class="reference internal" href="network.html#vobby-service">Vobby Service</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="infinoted.html">Infinoted</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="infinoted.html#jabber">Jabber</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Infinoted</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#jabber">Jabber</a></li>
 </ul>
 </li>
 </ul>
@@ -117,8 +118,12 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li></li>
+    <li>Infinoted</li>
       <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/infinoted.txt" rel="nofollow"> View page source</a>
+          
         
       </li>
   </ul>
@@ -126,22 +131,52 @@
 </div>
           <div role="main" class="document">
             
-  <noscript>
-  <div id="fallback" class="admonition warning">
-    <p class="last">
-      Please activate JavaScript to enable the search
-      functionality.
-    </p>
-  </div>
-  </noscript>
+  <div class="section" id="infinoted">
+<h1>Infinoted<a class="headerlink" href="#infinoted" title="Permalink to this headline">¶</a></h1>
+<p>Infinoted has some documentation here, <a class="reference external" href="http://infinote.org/Protocol/">http://infinote.org/Protocol/</a>, however
+it seems a little outdated.  What follows is what has been pieced from the
+outdated protocol documentation as well as by reverse engineering using
+<a class="reference external" href="https://www.wireshark.org/">Wireshark</a> and snooping on Gobby to Gobby
+communications.</p>
+<div class="section" id="jabber">
+<h2>Jabber<a class="headerlink" href="#jabber" title="Permalink to this headline">¶</a></h2>
+<p>Gobby and Infinoted servers appear to use Jabber, also known as XMPP, as the main transport
+mechanism.</p>
+<p>The initial handshake of the Gobby client to the server is very similar to the
+normal Jabber handshake.</p>
+<div class="literal-block-wrapper container" id="client-request">
+<div class="code-block-caption"><span class="caption-text">Client request</span><a class="headerlink" href="#client-request" title="Permalink to this code">¶</a></div>
+<div class="highlight-xml"><div class="highlight"><pre><span></span> <span class="nt">&lt;stream:stream</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;jabber:client&quot;</span>
+ <span class="na">xmlns:stream=</span><span class="s">&quot;http://etherx.jabber.org/streams&quot;</span> <span class="na">to=</span><span class="s">&quot;127.0.0.1&quot;</span><span class="nt">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper container" id="server-reply">
+<div class="code-block-caption"><span class="caption-text">Server reply</span><a class="headerlink" href="#server-reply" title="Permalink to this code">¶</a></div>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;stream:stream</span> <span class="na">xmlns:stream=</span><span class="s">&quot;http://etherx.jabber.org/streams&quot;</span>
+<span class="na">xmlns=</span><span class="s">&quot;jabber:client&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span> <span class="na">from=</span><span class="s">&quot;MINE&quot;</span><span class="nt">&gt;</span>
 
-  
-  <div id="search-results">
-  
-  </div>
+<span class="nt">&lt;stream:features&gt;</span>
+    <span class="nt">&lt;mechanisms</span> <span class="na">xmlns=</span><span class="s">&quot;urn:ietf:params:xml:ns:xmpp-sasl&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;mechanism&gt;</span>ANONYMOUS<span class="nt">&lt;/mechanism&gt;</span>
+    <span class="nt">&lt;/mechanisms&gt;</span>
+<span class="nt">&lt;/stream:features&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
 
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="network.html" class="btn btn-neutral" title="Network Communication" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
@@ -178,7 +213,6 @@
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="_static/searchtools.js"></script>
 
   
 
@@ -194,14 +228,7 @@
           SphinxRtdTheme.StickyNav.enable();
       });
   </script>
-  
-  <script type="text/javascript">
-    jQuery(function() { Search.loadIndex("searchindex.js"); });
-  </script>
-  
-  <script type="text/javascript" id="searchindexloader"></script>
    
-
 
 </body>
 </html>
