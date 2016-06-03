@@ -8,6 +8,7 @@
    includeme
    ide_interfaces
    network
+   infinoted
 
 
 Indices and tables
