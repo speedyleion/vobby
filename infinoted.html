@@ -92,6 +92,7 @@
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Infinoted</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#jabber">Jabber</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#infinoted-handshake">Infinoted Handshake</a></li>
 </ul>
 </li>
 </ul>
@@ -155,12 +156,188 @@ normal Jabber handshake.</p>
 <div class="code-block-caption"><span class="caption-text">Server reply</span><a class="headerlink" href="#server-reply" title="Permalink to this code">¶</a></div>
 <div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;stream:stream</span> <span class="na">xmlns:stream=</span><span class="s">&quot;http://etherx.jabber.org/streams&quot;</span>
 <span class="na">xmlns=</span><span class="s">&quot;jabber:client&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span> <span class="na">from=</span><span class="s">&quot;MINE&quot;</span><span class="nt">&gt;</span>
-
-<span class="nt">&lt;stream:features&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper container" id="a-second-server-message">
+<div class="code-block-caption"><span class="caption-text">A second server message</span><a class="headerlink" href="#a-second-server-message" title="Permalink to this code">¶</a></div>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;stream:features&gt;</span>
     <span class="nt">&lt;mechanisms</span> <span class="na">xmlns=</span><span class="s">&quot;urn:ietf:params:xml:ns:xmpp-sasl&quot;</span><span class="nt">&gt;</span>
         <span class="nt">&lt;mechanism&gt;</span>ANONYMOUS<span class="nt">&lt;/mechanism&gt;</span>
     <span class="nt">&lt;/mechanisms&gt;</span>
 <span class="nt">&lt;/stream:features&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper container" id="client-authentication-request">
+<div class="code-block-caption"><span class="caption-text">Client authentication request</span><a class="headerlink" href="#client-authentication-request" title="Permalink to this code">¶</a></div>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;auth</span> <span class="na">xmlns=</span><span class="s">&quot;urn:ietf:params:xml:ns:xmpp-sasl&quot;</span> <span class="na">mechanism=</span><span class="s">&quot;ANONYMOUS&quot;</span><span class="nt">/&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper container" id="server-authentication-challenge">
+<div class="code-block-caption"><span class="caption-text">Server authentication challenge</span><a class="headerlink" href="#server-authentication-challenge" title="Permalink to this code">¶</a></div>
+<div class="highlight-xml"><div class="highlight"><pre><span></span> <span class="nt">&lt;challenge</span> <span class="na">xmlns=</span><span class="s">&quot;urn:ietf:params:xml:ns:xmpp-sasl&quot;</span><span class="nt">/&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper container" id="client-authentication-response">
+<div class="code-block-caption"><span class="caption-text">Client authentication response</span><a class="headerlink" href="#client-authentication-response" title="Permalink to this code">¶</a></div>
+<div class="highlight-xml"><div class="highlight"><pre><span></span> <span class="nt">&lt;response</span> <span class="na">xmlns=</span><span class="s">&quot;urn:ietf:params:xml:ns:xmpp-sasl&quot;</span><span class="nt">&gt;</span>QXRpbGxh<span class="nt">&lt;/response&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Don&#8217;t fully know why but twisted doesn&#8217;t seem to handle anonymous
+authentication correctly.  In order to get this to work I hacked up the xmpp
+observer to have a lambda function whose <code class="xref py py-meth docutils literal"><span class="pre">getResponse()</span></code> was the word
+<code class="docutils literal"><span class="pre">hello</span></code>.</p>
+<blockquote class="last">
+<div><div class="literal-block-wrapper container" id="hack-up-anonymous-authentication">
+<div class="code-block-caption"><span class="caption-text">Hack up anonymous authentication</span><a class="headerlink" href="#hack-up-anonymous-authentication" title="Permalink to this code">¶</a></div>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">connected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xmlstream</span><span class="p">):</span>
+    <span class="c1"># Need to inject our on challenge before twisted words sasl version.</span>
+    <span class="n">xmlstream</span><span class="o">.</span><span class="n">addObserver</span><span class="p">(</span><span class="s1">&#39;/challenge&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">challenge</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">challenge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+    <span class="c1"># Super hack not sure the exact problem but looking at RFC 2245 anonymous sasl</span>
+    <span class="c1"># should still work with challenge response</span>
+    <span class="n">event</span><span class="p">,</span> <span class="n">observers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmlstream</span><span class="o">.</span><span class="n">_getEventAndObservers</span><span class="p">(</span><span class="s1">&#39;/challenge&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Grab priority 0 observer callbacks</span>
+    <span class="k">for</span> <span class="n">observer</span> <span class="ow">in</span> <span class="n">observers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">observer</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">callback</span><span class="o">.</span><span class="n">im_class</span> <span class="o">==</span> <span class="n">SASLInitiatingInitializer</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">callback</span><span class="o">.</span><span class="n">im_self</span><span class="o">.</span><span class="n">mechanism</span><span class="p">,</span> <span class="s1">&#39;getResponse&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">):</span>
+                    <span class="n">callback</span><span class="o">.</span><span class="n">im_self</span><span class="o">.</span><span class="n">mechanism</span><span class="o">.</span><span class="n">getResponse</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="o">+</span> <span class="s1">&#39;hello&#39;</span>
+</pre></div>
+</div>
+</div>
+</div></blockquote>
+</div>
+<div class="literal-block-wrapper container" id="server-success">
+<div class="code-block-caption"><span class="caption-text">Server success</span><a class="headerlink" href="#server-success" title="Permalink to this code">¶</a></div>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;success</span> <span class="na">xmlns=</span><span class="s">&quot;urn:ietf:params:xml:ns:xmpp-sasl&quot;</span><span class="nt">/&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper container" id="client-request-not-exactly-sure-why-this-is-done-again">
+<div class="code-block-caption"><span class="caption-text">Client request. Not exactly sure why this is done again...</span><a class="headerlink" href="#client-request-not-exactly-sure-why-this-is-done-again" title="Permalink to this code">¶</a></div>
+<div class="highlight-xml"><div class="highlight"><pre><span></span> <span class="nt">&lt;stream:stream</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;jabber:client&quot;</span>
+ <span class="na">xmlns:stream=</span><span class="s">&quot;http://etherx.jabber.org/streams&quot;</span> <span class="na">to=</span><span class="s">&quot;127.0.0.1&quot;</span><span class="nt">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper container" id="server-reply-shorter-than-before">
+<div class="code-block-caption"><span class="caption-text">Server reply (shorter than before)</span><a class="headerlink" href="#server-reply-shorter-than-before" title="Permalink to this code">¶</a></div>
+<div class="highlight-xml"><div class="highlight"><pre><span></span> <span class="nt">&lt;stream:stream</span> <span class="na">xmlns:stream=</span><span class="s">&quot;http://etherx.jabber.org/streams&quot;</span>
+ <span class="na">xmlns=</span><span class="s">&quot;jabber:client&quot;</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span> <span class="na">from=</span><span class="s">&quot;MINE&quot;</span><span class="nt">&gt;</span>
+
+ <span class="nt">&lt;stream:features/&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="infinoted-handshake">
+<h2>Infinoted Handshake<a class="headerlink" href="#infinoted-handshake" title="Permalink to this headline">¶</a></h2>
+<p>The following now are Infinoted specific messages.</p>
+<p>It looks as if the first thing after the xmpp handshake is the Infinoted server
+provides a &#8220;welcome&#8221; message with the permissions.</p>
+<div class="literal-block-wrapper container" id="server-welcome-message">
+<div class="code-block-caption"><span class="caption-text">Server welcome message</span><a class="headerlink" href="#server-welcome-message" title="Permalink to this code">¶</a></div>
+<div class="highlight-xml"><div class="highlight"><pre><span></span> <span class="nt">&lt;group</span> <span class="na">name=</span><span class="s">&quot;InfDirectory&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;welcome</span> <span class="na">protocol-version=</span><span class="s">&quot;1.1&quot;</span> <span class="na">sequence-id=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;note-plugins&gt;</span>
+            <span class="nt">&lt;note-plugin</span> <span class="na">type=</span><span class="s">&quot;InfText&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/note-plugins&gt;</span>
+        <span class="nt">&lt;acl&gt;</span>
+            <span class="nt">&lt;sheet</span> <span class="na">id=</span><span class="s">&quot;default&quot;</span> <span class="na">can-add-subdirectory=</span><span class="s">&quot;yes&quot;</span>
+            <span class="na">can-add-document=</span><span class="s">&quot;yes&quot;</span> <span class="na">can-sync-in=</span><span class="s">&quot;yes&quot;</span> <span class="na">can-remove-node=</span><span class="s">&quot;yes&quot;</span>
+            <span class="na">can-explore-node=</span><span class="s">&quot;yes&quot;</span> <span class="na">can-subscribe-chat=</span><span class="s">&quot;yes&quot;</span>
+            <span class="na">can-subscribe-session=</span><span class="s">&quot;yes&quot;</span> <span class="na">can-join-user=</span><span class="s">&quot;yes&quot;</span>
+            <span class="na">can-query-account-list=</span><span class="s">&quot;no&quot;</span> <span class="na">can-create-account=</span><span class="s">&quot;no&quot;</span>
+            <span class="na">can-override-account=</span><span class="s">&quot;no&quot;</span> <span class="na">can-remove-account=</span><span class="s">&quot;no&quot;</span>
+            <span class="na">can-query-acl=</span><span class="s">&quot;no&quot;</span> <span class="na">can-set-acl=</span><span class="s">&quot;no&quot;</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/acl&gt;</span>
+    <span class="nt">&lt;/welcome&gt;</span>
+<span class="nt">&lt;/group&gt;</span>
+</pre></div>
+</div>
+</div>
+<p>The Gobby clients would then send an explore node to list the files and
+directories available on the server.</p>
+<p>Currently not certain on the publisher attribute...</p>
+<div class="literal-block-wrapper container" id="client-explore-request">
+<div class="code-block-caption"><span class="caption-text">Client explore request</span><a class="headerlink" href="#client-explore-request" title="Permalink to this code">¶</a></div>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;group</span> <span class="na">publisher=</span><span class="s">&quot;you&quot;</span> <span class="na">name=</span><span class="s">&quot;InfDirectory&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;explore-node</span> <span class="na">seq=</span><span class="s">&quot;0&quot;</span> <span class="na">id=</span><span class="s">&quot;0&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/group&gt;</span>
+</pre></div>
+</div>
+</div>
+<p>The Infinoted server would reply back with a header specifying how many messages
+are to follow.  In the following case there were three files on the Infinoted
+server.</p>
+<p>Looking at <a class="reference external" href="http://infinote.org/protocol/directory/">http://infinote.org/protocol/directory/</a> it seems that the seq of
+<cite>1/0</cite> is a combination of client id from the server welcome message, and the
+explore request <cite>seq</cite> attribute. So it&#8217;s <cite>sequence-id/seq</cite>.</p>
+<div class="literal-block-wrapper container" id="server-explore-header">
+<div class="code-block-caption"><span class="caption-text">Server explore header</span><a class="headerlink" href="#server-explore-header" title="Permalink to this code">¶</a></div>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;group</span> <span class="na">name=</span><span class="s">&quot;InfDirectory&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;explore-begin</span> <span class="na">total=</span><span class="s">&quot;3&quot;</span> <span class="na">seq=</span><span class="s">&quot;1/0&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/group&gt;</span>
+</pre></div>
+</div>
+</div>
+<p>My derivation of the attributes on <cite>add-node</cite>:</p>
+<dl class="docutils">
+<dt>id</dt>
+<dd>The numerical value to reference this node by.</dd>
+<dt>parent</dt>
+<dd>If this node is a in a subdirectory this would be the numerical value of the
+parent node.</dd>
+<dt>name</dt>
+<dd>The name of the file as seen on Gobby clients.</dd>
+<dt>type</dt>
+<dd>The type of node <cite>InfText</cite> is a normal text document.  I didn&#8217;t create a
+directory structure but it is most likely either <cite>InfDirectory</cite> or from
+<a class="reference external" href="http://infinote.org/protocol/directory/">http://infinote.org/protocol/directory/</a> it may be <cite>InfSubDirectory</cite>.</dd>
+<dt>seq</dt>
+<dd>Believe it to be the same as the <cite>explore-begin</cite> <cite>seq</cite>.</dd>
+</dl>
+<div class="literal-block-wrapper container" id="first-file">
+<div class="code-block-caption"><span class="caption-text">First file</span><a class="headerlink" href="#first-file" title="Permalink to this code">¶</a></div>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;group</span> <span class="na">name=</span><span class="s">&quot;InfDirectory&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;add-node</span> <span class="na">id=</span><span class="s">&quot;3&quot;</span> <span class="na">parent=</span><span class="s">&quot;0&quot;</span> <span class="na">name=</span><span class="s">&quot;test_gobby&quot;</span> <span class="na">type=</span><span class="s">&quot;InfText&quot;</span> <span class="na">seq=</span><span class="s">&quot;1/0&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/group&gt;</span>
+</pre></div>
+</div>
+</div>
+<p>A couple more file nodes that were sent.  Their names are <em>mine</em> and <em>yes</em>.
+Sorry not very original in my testing.</p>
+<div class="literal-block-wrapper container" id="second-file">
+<div class="code-block-caption"><span class="caption-text">Second file</span><a class="headerlink" href="#second-file" title="Permalink to this code">¶</a></div>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;group</span> <span class="na">name=</span><span class="s">&quot;InfDirectory&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;add-node</span> <span class="na">id=</span><span class="s">&quot;2&quot;</span> <span class="na">parent=</span><span class="s">&quot;0&quot;</span> <span class="na">name=</span><span class="s">&quot;mine&quot;</span> <span class="na">type=</span><span class="s">&quot;InfText&quot;</span> <span class="na">seq=</span><span class="s">&quot;1/0&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/group&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper container" id="third-file">
+<div class="code-block-caption"><span class="caption-text">Third file</span><a class="headerlink" href="#third-file" title="Permalink to this code">¶</a></div>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;group</span> <span class="na">name=</span><span class="s">&quot;InfDirectory&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;add-node</span> <span class="na">id=</span><span class="s">&quot;1&quot;</span> <span class="na">parent=</span><span class="s">&quot;0&quot;</span> <span class="na">name=</span><span class="s">&quot;yes&quot;</span> <span class="na">type=</span><span class="s">&quot;InfText&quot;</span> <span class="na">seq=</span><span class="s">&quot;1/0&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/group&gt;</span>
+</pre></div>
+</div>
+</div>
+<p>Finally the server <em>closes</em> the end of exploring.</p>
+<div class="literal-block-wrapper container" id="end-of-explore">
+<div class="code-block-caption"><span class="caption-text">End of explore</span><a class="headerlink" href="#end-of-explore" title="Permalink to this code">¶</a></div>
+<div class="highlight-xml"><div class="highlight"><pre><span></span><span class="nt">&lt;group</span> <span class="na">name=</span><span class="s">&quot;InfDirectory&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;explore-end</span> <span class="na">seq=</span><span class="s">&quot;1/0&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/group&gt;</span>
 </pre></div>
 </div>
 </div>
