@@ -45,6 +45,7 @@ class VimBeansProtocol(Protocol):
         self.files = {}
         self.service = service
         self.service.add_protocol(self)
+        self.sequence_number = 0
 
     def dataReceived(self, data):
         """
@@ -148,6 +149,20 @@ class VimBeansProtocol(Protocol):
             if self.files[_file] == buffer_name:
                 self.transport.write(str(_file) + ':insert/20 ' + str(offset) + ' "' +
                                      content.replace('\n', '\\n') + '"\n')
+
+    def get_sequence_no(self):
+        """Get a Vim sequence number
+
+        Returns: A sequence number to be used in communicating with Vim.  This
+        will be more or less unique, there is some roll over but shouldn't
+        collide too often.
+
+        """
+        self.sequence_number += 1
+
+        # TODO add a cap in case Vim starts getting funky with too large of a
+        # value
+        return self.sequence_number
 
     def write(self, message):
         """Writes data to Vim
