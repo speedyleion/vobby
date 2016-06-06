@@ -1,5 +1,28 @@
-"""
+"""Vim network interface
+
 This handles communicating with Vim through the netbeans interface.
+
+.. raw::
+
+            *-------------------*
+            |  VimBeansProtocol |
+            *---------*---------*
+                     / \
+                    /   \
+    *---------------*    *---------------*
+    | VimFileBuffer |    | VimFileBuffer |
+    *---------------*    *-------*-------*
+            |                    |
+            |                    |
+    *---------------*    *---------------*
+    | IDEFileBuffer |    | IDEFileBuffer |
+    *---------------*    *-------*-------*
+                    \   /
+                     \ /
+            *---------*---------*
+            |  OtherIDEProtocol |
+            *---------*---------*
+
 """
 from twisted.internet.protocol import Protocol, ServerFactory
 from twisted.python import log
@@ -7,15 +30,16 @@ from twisted.python import log
 
 class VimBeansProtocol(Protocol):
     """
-    This class implememnts the protocol of sending and recieving messages through Vims
-    Netbeans interface.
+    This class implements the protocol of sending and receiving messages
+    through Vims Netbeans interface.
     """
 
     def __init__(self, service):
         """
         Args:
-            service (VobbyService):  This will be the object to communicate back and forth
-                                     between the Vim protocol and the infinoted protocol.
+            service (VobbyService):  This is the object to communicate back
+                                     and forth between the Vim protocol and the
+                                     VobbyService.
         """
         self.bufid = 0
         self.files = {}
@@ -124,6 +148,17 @@ class VimBeansProtocol(Protocol):
             if self.files[_file] == buffer_name:
                 self.transport.write(str(_file) + ':insert/20 ' + str(offset) + ' "' +
                                      content.replace('\n', '\\n') + '"\n')
+
+    def write(self, message):
+        """Writes data to Vim
+
+        This will write out messages to the connected Vim instance.
+
+        Args:
+            message (string): The message to send to Vim
+
+        """
+        self.transport.write(message)
 
     def new_buffer(self, filename):
         """
