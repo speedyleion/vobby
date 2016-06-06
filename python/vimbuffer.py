@@ -12,6 +12,11 @@ class VimFileBuffer(FileBuffer):
     generic FileBuffer methods through to the Vim specific instance.
 
     """
+    #: This provides a mapping of Vim event to the appropriate methods to
+    #: handle them
+    VIM_EVENT_HANDLERS = {'remove': 'publish_delete',
+                          'insert': 'publish_insert'}
+
     def __init__(self, protocol, bufid):
 
         #: Used to keep track of mirror buffers from other IDEs.  This allows
@@ -94,3 +99,27 @@ class VimFileBuffer(FileBuffer):
         """
         # HACK for now just insert it all
         self.insert(content, 0, None)
+
+    def process_vim_event(self, event):
+        """ Handle a message from Vim
+
+        This will parse a Vim message and disposition it appropriately
+
+        Parameters:
+            message (string): The message from Vim.  Can be any message provided
+                              it was for this buffer.
+
+        """
+
+        # Vim events are of the form '<BufferID>:<event> [[args] [args]]'
+        # Strip off the buffer id and make sure it's valid
+        bufid, command = event.split(':', 1)
+        assert(bufid == self.bufid)
+
+        event_name, args = command.split(' ', 1)
+
+        method_name = self.VIM_EVENT_HANDLERS.get(event_name, None)
+
+        if method_name:
+            method = self.__getattribute__(method_name)
+            method(args.split(' '))
