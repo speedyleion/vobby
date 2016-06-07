@@ -1,4 +1,4 @@
-"""
+""" Implements the Filebuffer for Vim interfaces
 
 
 """
@@ -12,10 +12,6 @@ class VimFileBuffer(FileBuffer):
     generic FileBuffer methods through to the Vim specific instance.
 
     """
-    #: This provides a mapping of Vim event to the appropriate methods to
-    #: handle them
-    VIM_EVENT_HANDLERS = {'remove': 'publish_delete',
-                          'insert': 'publish_insert'}
 
     def __init__(self, protocol, bufid):
 
@@ -118,8 +114,40 @@ class VimFileBuffer(FileBuffer):
 
         event_name, args = command.split(' ', 1)
 
-        method_name = self.VIM_EVENT_HANDLERS.get(event_name, None)
+        method = getattr(self, 'event_{}'.format(event_name), None)
 
-        if method_name:
-            method = self.__getattribute__(method_name)
-            method(args.split(' '))
+        if method:
+            method(args)
+
+    def event_insert(self, insert_args):
+        """This will process an `insert` event from Vim
+
+        This will notify all of :attr:`buffers` about the insetion of text by
+        Vim.
+
+        Args:
+            insert_args (string): The insert argument from Vim.  Expected to be
+                                  in the form of '<offset> "content"'
+
+        """
+        offset, content = insert_args.split(' ', 1)
+
+        # Strip off the leading and trailing quotes, '"'
+        content = content[1:-1]
+        for buf in self.buffers:
+            buf.insert(int(offset), content)
+
+    def event_remove(self, remove_args):
+        """Process a 'remove' event from Vim
+
+        This will notify all of :attr:`buffers` about the deletion of text by
+        Vim.
+
+        Args:
+            remove_args (string): The remove argument from Vim.  Expected to be
+                                  in the form of '<offset> <length>'
+
+        """
+        offset, length = remove_args.split(' ', 1)
+        for buf in self.buffers:
+            buf.delete(int(offset), int(length))

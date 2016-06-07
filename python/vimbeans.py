@@ -55,6 +55,7 @@ class VimBeansProtocol(Protocol):
         """
         log.msg('Recieved data %s' % (data))
 
+
         # TODO probably need a smarter approach, but for now hard code the decision here.
 
         # Handle non buffer specific commands
