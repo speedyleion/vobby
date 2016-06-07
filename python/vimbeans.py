@@ -26,6 +26,7 @@ This handles communicating with Vim through the netbeans interface.
 """
 from twisted.internet.protocol import Protocol, ServerFactory
 from twisted.python import log
+import re
 
 
 class VimBeansProtocol(Protocol):
@@ -56,37 +57,13 @@ class VimBeansProtocol(Protocol):
         log.msg('Recieved data %s' % (data))
 
 
-        # TODO probably need a smarter approach, but for now hard code the decision here.
-
-        # Handle non buffer specific commands
-        if data.startswith('0'):
-            data = data[2:]
-            # A new Vim buffer has been opened
-            if data.startswith('fileOpened'):
-                self.watchFile(data.split()[1])
-
-            return
-
-        if data.startswith('AUTH'):
-            return
-
-        # If we got here then we are looking at a specific buffer
         for line in data.splitlines():
-            sentid = int(line[0])
-            command = line[2:]
-            if sentid in self.files:
-                # TODO we always seem to get remove and insert in the same run, so probably
-                # need to optimize this some.
+            message = re.split('[ :]', line, 1)
 
-                # Vim uses byte offsets into buffers.  May need to handle utf-8 vs ascii...
-
-                if command.startswith('remove'):
-                    _, offset, length = command.split(' ', 2)
-                    self.service.delete_gobby(int(offset), int(length), self.files[sentid])
-
-                if command.startswith('insert'):
-                    _, offset, content = command.split(' ', 2)
-                    self.service.insert_gobby(content[1:-1], int(offset), self.files[sentid])
+            # When the first part of the message is a digit it's directed toward
+            # a buffer.  Currently ignoring the AUTH and others
+            if message[0].isdigit():
+                self.files[message[0]].process_vim_event(message[1])
 
     def watchFile(self, filename):
         """
