@@ -26,9 +26,11 @@ This handles communicating with Vim through the netbeans interface.
 """
 from twisted.internet.protocol import Protocol, ServerFactory
 from twisted.python import log
-import re
+
+from .vimbuffer import VimFileBuffer
 
 VIM_SPECIAL_MESSAGES = ['AUTH', 'DISCONNECT', 'DETACH', 'REJECT', 'ACCEPT']
+
 
 class VimBeansProtocol(Protocol):
     """
@@ -43,11 +45,17 @@ class VimBeansProtocol(Protocol):
                                      and forth between the Vim protocol and the
                                      VobbyService.
         """
-        self.bufid = 0
+        #: the next buffer number to use for assigning buffer numbers with Vim
+        self.bufid = 1
+
+        #: dictionary of bufid to VimFileBuffer objects.  Uses strings to
+        #: represent the entries so they can be used directly from Vim.  Note '0'
+        #: is this object.
         self.files = {}
+        self.files['0'] = self
         self.service = service
         self.service.add_protocol(self)
-        self.sequence_number = 0
+        self.sequence_number = 1
 
     def dataReceived(self, data):
         """
@@ -87,54 +95,18 @@ class VimBeansProtocol(Protocol):
         TODO need to associate the buffer number with infinoted
 
         """
-        self.bufid += 1
-        self.files[self.bufid] = filename
+        self.files[str(self.bufid)] = VimFileBuffer(self, self.bufid)
         self.transport.write(str(self.bufid) + ':putBufferNumber!2 ' + filename + '\n')
         self.transport.write(str(self.bufid) + ':startDocumentListen!3\n')
+        self.bufid += 1
 
     def connectionLost(self, reason):
         """
-        TODO This might need to do something probably should close connection to infinoted
+        TODO This might need to do something probably should close connection to
+        infinoted
 
         """
         log.msg('Lost connection')
-
-    def sync(self, content, buffer_name):
-        """
-        Synce the `contents` of `buffer_name`
-        """
-        # Find the buffer
-        for _file in self.files:
-            if self.files[_file] == buffer_name:
-                self.transport.write(str(_file) + ':insert/50 0 "' + content.replace('\n', '\\n') + '"\n')
-                self.transport.write(str(_file) + ':initDone!0\n')
-                break
-
-        # Probably need a finally here...
-
-    def delete(self, offset, length, buffer_name):
-        """
-        Deletes part of the buffer
-        """
-        for _file in self.files:
-            if self.files[_file] == buffer_name:
-                self.transport.write(str(_file) + ':remove/10 ' + str(offset) + ' ' +
-                                     str(length) + '\n')
-
-    def insert(self, content, offset, buffer_name):
-        """
-        This will insert text into the given buffer.
-
-        Args:
-            content (string): Data to insert.  Often this is one character at a time.
-            offset (int): Byte offset into the buffer.
-            buffer_name (string): The buffer name.
-
-        """
-        for _file in self.files:
-            if self.files[_file] == buffer_name:
-                self.transport.write(str(_file) + ':insert/20 ' + str(offset) + ' "' +
-                                     content.replace('\n', '\\n') + '"\n')
 
     def get_sequence_no(self):
         """Get a Vim sequence number
@@ -165,8 +137,7 @@ class VimBeansProtocol(Protocol):
         """
         Create a new buffer with name in Vim.
         """
-        self.bufid += 1
-        self.files[self.bufid] = filename
+        self.files[self.bufid] = VimFileBuffer(self, self.bufid)
         self.transport.write(str(self.bufid) + ':create!0\n')
         self.transport.write(str(self.bufid) + ':setTitle!0 "' + filename + '"\n')
         self.transport.write(str(self.bufid) + ':setFullName!0 "' + filename + '"\n')
@@ -174,12 +145,13 @@ class VimBeansProtocol(Protocol):
         self.transport.write(str(self.bufid) + ':setModified!0 F\n')
         self.transport.write(str(self.bufid) + ':setContentType!0\n')
         self.transport.write(str(self.bufid) + ':startDocumentListen!0\n')
+        self.bufid += 1
 
 
 class VimBeansFactory(ServerFactory):
     """
-    TODO this seems to be a twisted pattern but I don't really understand the porpoise of
-    it.
+    TODO this seems to be a twisted pattern but I don't really understand the
+    porpoise of it.
 
     """
 
