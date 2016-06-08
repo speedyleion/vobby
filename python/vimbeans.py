@@ -28,6 +28,7 @@ from twisted.internet.protocol import Protocol, ServerFactory
 from twisted.python import log
 import re
 
+VIM_SPECIAL_MESSAGES = ['AUTH', 'DISCONNECT', 'DETACH', 'REJECT', 'ACCEPT']
 
 class VimBeansProtocol(Protocol):
     """
@@ -50,31 +51,38 @@ class VimBeansProtocol(Protocol):
 
     def dataReceived(self, data):
         """
-        This will parse the netbeans messages from the Vim instance and take appropriate
-        action.
+        This will parse the netbeans messages from the Vim instance and take
+        appropriate action.
 
         """
         log.msg('Recieved data %s' % (data))
 
-
         for line in data.splitlines():
-            message = re.split('[ :]', line, 1)
 
-            # When the first part of the message is a digit it's directed toward
-            # a buffer.  Currently ignoring the AUTH and others
+            # For now skip the special messages
+            if any(line.startswith(special) for special in VIM_SPECIAL_MESSAGES):
+                continue
+
+            message = line.split(':', 1)
             if message[0].isdigit():
                 self.files[message[0]].process_vim_event(message[1])
 
+            # Maybe later handle returns which use spaces but for now just
+            # ignore them
+            # message = re.split('[ :]', line, 1)
+            # if message[0].isdigit():
+
     def watchFile(self, filename):
         """
-        This will instruct the Vim instance to notify this of changes to the `filename`.
+        This will instruct the Vim instance to notify this of changes to the
+        `filename`.
 
         Parameters:
-            filename (str): The filename of the Vim buffer to watch.  This will be the
-                            filename local to the Vim instance running
+            filename (str): The filename of the Vim buffer to watch.  This will
+                            be the filename local to the Vim instance running
 
-        Hard coded the sequence numbers as 2 and 3.  Not quite sure yet how to utilize or if
-        they need to be.
+        Hard coded the sequence numbers as 2 and 3.  Not quite sure yet how to
+        utilize or if they need to be.
 
         TODO need to associate the buffer number with infinoted
 
