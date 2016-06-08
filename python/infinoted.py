@@ -14,7 +14,9 @@ from twisted.python import log
 
 class InfinotedProtocol(object):
     """
-    TODO this needs to be examined, probably should be an actual protocol/factory setup
+    TODO this needs to be examined, probably should be an actual
+    protocol/factory setup
+
     """
     def __init__(self, service):
         jid = JID('127.0.0.1')
@@ -105,7 +107,8 @@ class InfinotedProtocol(object):
         TODO might need to pass the buffer/sequence id in here
 
         Args:
-            position (int): The caret position in the buffer to insert into, 0 based.
+            position (int): The caret position in the buffer to insert into, 0
+                            based.
             text (string): the text to insert, often one character.
 
         Example: xml from gobby packet sniffing
@@ -135,7 +138,9 @@ class InfinotedProtocol(object):
 
     def subscribe_session(self, element):
         """
-        This will send back an ack if we get the expected subscription confirmation
+        This will send back an ack if we get the expected subscription
+        confirmation
+
         """
         node = element.firstChildElement()
         self.session = node['group']
@@ -199,8 +204,8 @@ class InfinotedProtocol(object):
         This will add a file to the list of available files.
         """
 
-        # There may be a better way to hook but i keep getting the root, not the element I
-        # care about
+        # There may be a better way to hook but i keep getting the root, not the
+        # element I care about
         node = element.firstChildElement()
         self.files[node['name']] = node['id']
 
