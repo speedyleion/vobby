@@ -2,8 +2,9 @@
 Implements the FileBuffer interface for infinoted buffers
 """
 
-from .file_buffer import FileBuffer
+from twisted.words.xish import domish
 
+from .file_buffer import FileBuffer
 
 class InfinotedBuffer(FileBuffer):
     """
@@ -42,9 +43,27 @@ class InfinotedBuffer(FileBuffer):
                             different colors.
 
         """
+        # TODO this may need a common retrieval method for group node and
+        # request node
+        root_attribs = {'publisher': 'you', 'name': self.session}
+        root_node = domish.Element(('', 'group'), attribs=root_attribs)
+
+        request_attribs = {'user': self.user_id, 'time': ''}
+        request_node = domish.Element(('', 'request'), attribs=request_attribs)
+
+        delete_attribs = {'pos': offset, 'len': length}
+        delete_node = domish.Element(('', 'delete-caret'),
+                                     attribs=delete_attribs)
+
+        request_node.addChild(delete_node)
+        root_node.addChild(request_node)
+
+
+        self.protocol.xmlstream.send(root_node.toXml())
+
         # HACK need to use actual xml logic as well as genericise sending data
         # through self.protocol
-        self.protocol.xmlstream.send(u'<group publisher="you" name="' + self.session + '">'
-                            '<request user="' + self.user_id + '" time="">'
-                            '<delete-caret pos="' + str(offset) + '" len="' + str(length)
-                            + '"/></request></group>')
+        # self.protocol.xmlstream.send(u'<group publisher="you" name="' + self.session + '">'
+        #                     '<request user="' + self.user_id + '" time="">'
+        #                     '<delete-caret pos="' + str(offset) + '" len="' + str(length)
+        #                     + '"/></request></group>')
