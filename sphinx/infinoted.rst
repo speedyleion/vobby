@@ -53,12 +53,12 @@ normal Jabber handshake.
      <response xmlns="urn:ietf:params:xml:ns:xmpp-sasl">QXRpbGxh</response>
 
 .. note:: Don't fully know why but twisted doesn't seem to handle anonymous
-    authentication correctly.  In order to get this to work I hacked up the xmpp
-    observer to have a lambda function whose :meth:`getResponse` was the word
-    ``hello``.
+    authentication correctly.  In order to get this to work I monkey patched the
+    xmpp observer to have a lambda function whose :meth:`getResponse` was the
+    word ``hello``.
 
         .. code-block:: python
-            :caption: Hack up anonymous authentication
+            :caption: Monkeypatch anonymous authentication
 
             def connected(self, xmlstream):
                 # Need to inject our on challenge before twisted words sasl version.
@@ -150,13 +150,20 @@ explore request `seq` attribute. So it's `sequence-id/seq`.
         <explore-begin total="3" seq="1/0"/>
     </group>
 
+.. code-block:: xml
+    :caption: First file
+
+    <group name="InfDirectory">
+        <add-node id="3" parent="0" name="test_gobby" type="InfText" seq="1/0"/>
+    </group>
+
 My derivation of the attributes on `add-node`:
 
 id
     The numerical value to reference this node by.
 
 parent
-    If this node is a in a subdirectory this would be the numerical value of the
+    If this node is in a subdirectory this would be the numerical value of the
     parent node.
 
 name
@@ -168,14 +175,7 @@ type
     http://infinote.org/protocol/directory/ it may be `InfSubDirectory`.
 
 seq
-    Believe it to be the same as the `explore-begin` `seq`.
-
-.. code-block:: xml
-    :caption: First file
-
-    <group name="InfDirectory">
-        <add-node id="3" parent="0" name="test_gobby" type="InfText" seq="1/0"/>
-    </group>
+    Believe it to be ``<client_id>/<request_seq>``.
 
 A couple more file nodes that were sent.  Their names are *mine* and *yes*.
 Sorry not very original in my testing.
@@ -201,4 +201,121 @@ Finally the server *closes* the end of exploring.
 
     <group name="InfDirectory">
         <explore-end seq="1/0"/>
+    </group>
+
+User Registration
+^^^^^^^^^^^^^^^^^
+
+TODO 
+
+File Subscribing
+^^^^^^^^^^^^^^^^
+
+Once a list of the files has been sent to the client the client can request to
+subscribe to changes to the files.
+
+.. code-block:: xml
+    :caption: Subscribe to a File
+
+    <group publisher="you" name="InfDirectory">
+        <subscribe-session seq="2" id="3"/>
+    </group>
+
+My derivation of the attributes on `subscribe-session` request:
+
+id
+    The ``id`` from a file sent in the `explore-begin` message.
+
+seq
+    Believe it to be the same as the `explore-node` `seq`.  Basically a more or
+    less incrementing number to differentiate subsequent requests and their
+    replies.
+
+.. code-block:: xml
+    :caption: Server reply
+
+    <group name="InfDirectory">
+        <subscribe-session group="InfSession_3" method="central" id="3"
+        seq="1/2"/>
+    </group>
+
+My derivation of the attributes on `subscribe-session` reply:
+
+group
+    This string will be used for communicating file contents and changes.
+
+id
+    The ``id`` from a file sent in the `explore-begin` message.
+
+method
+    NOT SURE
+
+seq
+    Believe it to be ``<client_id>/<request_seq>``.
+
+The client then sneds a subscription Ack.  It looks like the only thing is the
+new `subscribe-ack` node as well as the `id` of the requested file.
+
+.. code-block:: xml
+    :caption: Subscription Ack
+
+    <group publisher="you" name="InfDirectory">
+        <subscribe-ack id="3"/>
+    </group>
+
+The server will then begin syncing the file contents to the client.
+
+.. code-block:: xml
+    :caption: File syncronization
+
+    <group name="InfSession_3">
+        <sync-begin num-messages="1"/>
+    </group>
+
+Notice how the `name` attribute of the `group` node is the same as the `group`
+attribute for the `subscribe-session` reply.
+
+I didn't do thorough testing to know if this was simply a concatenation of
+``InfSession_`` and the `id` for the buffer or if there is more logic to it.
+
+The users who have modified the file will next be sent.  
+
+.. todo:: This was an empty buffer, may need a better example
+
+.. code-block:: xml
+    :caption: Sync User data
+
+    <group name="InfSession_3">
+        <sync-user id="1" name="Tom" status="unavailable" time="" caret="0"
+        selection="0" hue="0.28028500000000001"/>
+    </group>
+
+My derivation of the attributes on `sync-user` reply:
+
+id
+    The client id of the user.  
+
+name
+    Name of the user
+
+status
+    Not sure what else is available
+
+caret
+    The position of the users cursor
+
+selection
+    Not sure exactly guessing it goes "backward" from the current cursor
+    position??
+
+hue
+    The color used to represent the user in gobby editors.
+
+The client will then send back a sync ack.
+
+.. code-block:: xml
+    :caption: Sync Ack
+
+    <group publisher="you" name="InfSession_3">
+        <sync-ack/>
     </group>
