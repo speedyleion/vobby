@@ -47,7 +47,7 @@ class InfinotedBuffer(FileBuffer):
         delete_node = domish.Element(('', 'delete-caret'),
                                      attribs=delete_attribs)
 
-        self._send_request(delete_node)
+        self.protocol.send_request(delete_node)
 
     def insert(self, content, offset, user=None):
         """
@@ -73,29 +73,18 @@ class InfinotedBuffer(FileBuffer):
         insert_node = domish.Element(('', 'insert-caret'))
         insert_node['pos'] = offset  # TODO check the int to string stuff here??
         insert_node.addContent(content)
-        self._send_request(insert_node)
+        self.protocol.send_request(insert_node)
 
-    def _send_request(self,  request):
-        """Sends a buffer modification request to the infinoted server
-
-        This will build up the request structure and send the message up the
-        pipe
+    def sync(self, content):
+        """
+        This is usually used on initial creation/editing of a shared buffer.
+        `content` will be the entire contents of the buffer.  Most
+        implementations will probably remove all of the previous contents in the
+        buffer and replace them with this new `content`.
 
         Args:
-            request (domish.Element): The request operation element.  Something
-                                      like <insert-caret> or <delete-caret>.
+            content (string): The entire contents of the buffer.
 
         """
-        # Create the request operation wrapper nodes
-        root_attribs = {'publisher': 'you', 'name': self.session}
-        root_node = domish.Element(('', 'group'), attribs=root_attribs)
-
-        request_attribs = {'user': self.user_id, 'time': ''}
-        request_node = domish.Element(('', 'request'), attribs=request_attribs)
-        root_node.addChild(request_node)
-
-        # Add the request operation node
-        request_node.addChild(request)
-
-        # Send the actual message
-        self.protocol.xmlstream.send(root_node.toXml())
+        # HACK for now just insert it all
+        self.insert(content, 0, None)

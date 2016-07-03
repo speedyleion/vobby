@@ -230,3 +230,28 @@ class InfinotedProtocol(object):
 
         presence = domish.Element((None, 'presence'))
         xs.send(presence)
+
+    def send_request(self, request):
+        """Sends a buffer modification request to the infinoted server
+
+        This will build up the request structure and send the message up the
+        pipe
+
+        Args:
+            request (domish.Element): The request operation element.  Something
+                                      like <insert-caret> or <delete-caret>.
+
+        """
+        # Create the request operation wrapper nodes
+        root_attribs = {'publisher': 'you', 'name': self.session}
+        root_node = domish.Element(('', 'group'), attribs=root_attribs)
+
+        request_attribs = {'user': self.user_id, 'time': ''}
+        request_node = domish.Element(('', 'request'), attribs=request_attribs)
+        root_node.addChild(request_node)
+
+        # Add the request operation node
+        request_node.addChild(request)
+
+        # Send the actual message
+        self.protocol.xmlstream.send(root_node.toXml())

@@ -49,10 +49,11 @@ class VimBeansProtocol(Protocol):
         self.bufid = 1
 
         #: dictionary of bufid to VimFileBuffer objects.  Uses strings to
-        #: represent the entries so they can be used directly from Vim.  Note '0'
-        #: is this object.
+        #: represent the entries so they can be used directly from Vim.  Note
+        #: '0' is this object.
         self.files = {}
         self.files['0'] = self
+
         self.service = service
         self.service.add_protocol(self)
         self.sequence_number = 1
@@ -62,20 +63,30 @@ class VimBeansProtocol(Protocol):
         This will parse the netbeans messages from the Vim instance and take
         appropriate action.
 
+        You'll need to look at ":help netbeans-protocol" in Vim to get the full
+        documentation on these.
+
+        http://vimdoc.sourceforge.net/htmldoc/netbeans.html#netbeans-protocol is
+        an online version of the help.
+
+        Args:
+            data (str): A netbeans string message from Vim.
+
         """
         log.msg('Recieved data %s' % (data))
 
         for line in data.splitlines():
 
             # For now skip the special messages
-            if any(line.startswith(special) for special in VIM_SPECIAL_MESSAGES):
+            if any(line.startswith(special) for special in
+                    VIM_SPECIAL_MESSAGES):
                 continue
 
             message = line.split(':', 1)
             if message[0].isdigit():
                 self.files[message[0]].process_vim_event(message[1])
 
-            # Maybe later handle returns which use spaces but for now just
+            # Maybe later handle Replies which use spaces but for now just
             # ignore them
             # message = re.split('[ :]', line, 1)
             # if message[0].isdigit():
@@ -96,7 +107,9 @@ class VimBeansProtocol(Protocol):
 
         """
         self.files[str(self.bufid)] = VimFileBuffer(self, self.bufid)
-        self.transport.write(str(self.bufid) + ':putBufferNumber!2 ' + filename + '\n')
+        self.transport.write(str(self.bufid) + ':putBufferNumber!2 ' +
+                             filename + '\n')
+
         self.transport.write(str(self.bufid) + ':startDocumentListen!3\n')
         self.bufid += 1
 
@@ -112,8 +125,7 @@ class VimBeansProtocol(Protocol):
         """Get a Vim sequence number
 
         Returns: A sequence number to be used in communicating with Vim.  This
-        will be more or less unique, there is some roll over but shouldn't
-        collide too often.
+        will be more or less unique.
 
         """
         self.sequence_number += 1
@@ -139,8 +151,10 @@ class VimBeansProtocol(Protocol):
         """
         self.files[self.bufid] = VimFileBuffer(self, self.bufid)
         self.transport.write(str(self.bufid) + ':create!0\n')
-        self.transport.write(str(self.bufid) + ':setTitle!0 "' + filename + '"\n')
-        self.transport.write(str(self.bufid) + ':setFullName!0 "' + filename + '"\n')
+        self.transport.write(str(self.bufid) + ':setTitle!0 "' +
+                             filename + '"\n')
+        self.transport.write(str(self.bufid) + ':setFullName!0 "' +
+                             filename + '"\n')
         self.transport.write(str(self.bufid) + ':setCaretListener!0\n')
         self.transport.write(str(self.bufid) + ':setModified!0 F\n')
         self.transport.write(str(self.bufid) + ':setContentType!0\n')
