@@ -48,6 +48,7 @@ class InfinotedProtocol(object):
 
         # Need to inject our on challenge before twisted words sasl version.
         xs.addObserver('/challenge', self.challenge, 100)
+
         xs.addObserver('/group/welcome', self.welcome)
         xs.addObserver('/group/explore-begin', self.explore)
         xs.addObserver('/group/explore-end', self.explore_end)
@@ -63,6 +64,16 @@ class InfinotedProtocol(object):
         xs.addObserver('/group/request/delete-caret', self.delete)
 
     def delete(self, element):
+        """ Directs the deletion request to the proper buffer to be handled
+
+        Args:
+            element (domish.Element): The element to delete.  Not fully
+                                      understanding twisted but this seems to
+                                      give more or less the entire element tree
+                                      not just the actual delete command element
+
+        """
+        # Navigate down to the actual delete command
         delete_node = element.firstChildElement().firstChildElement()
         offset = int(delete_node['pos'])
         length = int(delete_node['len'])
@@ -84,48 +95,6 @@ class InfinotedProtocol(object):
         # TODO this needs to be more robust and really ack
         self.xmlstream.send(u'<group publisher="you" name="InfDirectory">'
                             '<subscribe-ack/></group>')
-
-    def delete_text(self, offset, length, buffer_name):
-        """TODO: Docstring for delete_text.
-
-        Args:
-            offset (TODO): TODO
-            length (TODO): TODO
-            buffer_name (TODO): TODO
-
-        Returns: TODO
-
-        """
-        self.xmlstream.send(u'<group publisher="you" name="' + self.session + '">'
-                            '<request user="' + self.user_id + '" time="">'
-                            '<delete-caret pos="' + str(offset) + '" len="' + str(length)
-                            + '"/></request></group>')
-
-    def insert_text(self, text, position, buffer_name):
-        """
-        This will insert text into the subscribed buffer.
-
-        TODO might need to pass the buffer/sequence id in here
-
-        Args:
-            position (int): The caret position in the buffer to insert into, 0
-                            based.
-            text (string): the text to insert, often one character.
-
-        Example: xml from gobby packet sniffing
-            <group publisher="you" name="InfSession_3">
-                <request user="1" time="">
-                    <insert-caret pos="0">T</insert-caret>
-                </request>
-            </group>
-
-        """
-        self.xmlstream.send(u'<group publisher="you" name="' + self.session + '">'
-                            '<request user="' + self.user_id + '" time="">'
-                            '<insert-caret pos="' + str(position) + '">' + text +
-                            '</insert-caret>'
-                            '</request>'
-                            '</group>')
 
     def explore_end(self, element):
         """
@@ -246,7 +215,7 @@ class InfinotedProtocol(object):
         group_node.addChild(node)
 
         # Send the actual message
-        self.protocol.xmlstream.send(group_node.toXml())
+        self.protocol.xmlstream.send(group_node)
 
     def send_request(self, request, name):
         """Sends a buffer modification request to the infinoted server

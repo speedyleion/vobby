@@ -319,3 +319,55 @@ The client will then send back a sync ack.
     <group publisher="you" name="InfSession_3">
         <sync-ack/>
     </group>
+
+File Edition
+^^^^^^^^^^^^
+
+The main commands for editing a file are insert and delete.
+
+.. code-block:: xml
+    :caption: Insert command
+
+    <group publisher="you" name="InfSession_3">
+        <request user="1" time="">
+            <insert-caret pos="119">s</insert-caret>
+        </request>
+    </group>
+
+Here you can see that `InfSession_3` is the file to modify.  The request node
+contains the user id that was sent with INSERT LINK HERE.  Time appears to be
+empty not sure why or what it's supposed to represent.  `delete-caret` is the
+actual delete request node.  It has:
+
+pos
+    The char offset into the buffer to start deleting from.  IS THIS 0 or 1
+    BASED?
+
+The contents of the `insert-caret` node are the contents to insert.  Usually the
+network messages are fast so when typing this is only one character at a time.
+However if you paste a block of text like `hello` then it would be
+            ``<insert-caret pos="119">hello</insert-caret>``
+
+.. code-block:: xml
+    :caption: Delete command
+
+    <group publisher="you" name="InfSession_3">
+        <request user="1" time="">
+            <delete-caret pos="23" len="1"/>
+        </request>
+    </group>
+
+Here you can see that `InfSession_3` is the file to modify.  The request node
+contains the user id that was sent with INSERT LINK HERE.  Time appears to be
+empty not sure why or what it's supposed to represent.  `delete-caret` is the
+actual delete request node.  It has:
+
+pos
+    The char offset into the buffer to start deleting from.  IS THIS 0 or 1
+    BASED?
+
+len
+    The number of characters to delete.  HOW DOES THIS HANDLE LINE ENDINGS? "\n"
+    vs "\r\n"?
+
+
