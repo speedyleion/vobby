@@ -11,22 +11,24 @@ class InfinotedBuffer(FileBuffer):
     """
     This is the buffer interface for infinoted buffers
     """
-    def __init__(self, protocol, id):
+    def __init__(self, protocol, element):
         """
-        Parameters:
+        Args:
             protocol (InfinotedProtocol): The protocol to use for communicating
 
-            id (string): The file id from the infinoted server.
+            element (domish.Element): The root `group` element of the buffer
 
         This will send the ack back to the infinoted server
 
         """
         self.protocol = protocol
-        self.id = id
+
+        subscribe_node = element.firstChildElement()
+        self.bufid = subscribe_node['group']
 
         # Send the ack
         node = domish.Element(('', 'subscribe-ack'))
-        node['id'] = id
+        node['id'] = subscribe_node['id']
         self.protocol.send_node(node, 'InfDirectory')
 
     def delete(self, offset, length, user=None):
@@ -146,3 +148,17 @@ class InfinotedBuffer(FileBuffer):
 
         for buf in self.buffers:
             buf.delete(int(offset), int(length))
+
+    def event_sync(self, element):
+        """ This is the counter to :meth:sync
+
+        This will notify all of :attr:`buffers` about the contents of the buffer
+        as reported by the Infinoted server.
+
+        Args:
+            element (domish.Element): The root element of the request
+
+        """
+        content_node = element.firstChildElement()
+        for buf in self.buffers:
+            buf.sync(content_node.content)

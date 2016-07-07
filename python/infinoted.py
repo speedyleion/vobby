@@ -1,5 +1,7 @@
 """
 This handles the communication to an infinoted server
+
+
 """
 
 from twisted.internet import reactor
@@ -28,7 +30,15 @@ class InfinotedProtocol(object):
             reactor, 'xmpp-client', jid.host, f, defaultPort=6523)
         connector.connect()
         self.finished = Deferred()
+
+        #: This contains a mapping of files to their "names".  Infinoted
+        #: references files by a numeric ID.  Humans reference them by names.
+        #: Everyone will communicate to this via file strings
         self.files = {}
+
+
+        #: dictionary of sessionnames to InfinotedFileBuffer objects.
+        self.buffers = {}
         self.service = service
 
     def rawDataIn(self, buf):
@@ -73,39 +83,19 @@ class InfinotedProtocol(object):
         However it makes it nice to dispatch to the correct buffer object.
 
         """
-        # Navigate down to the actual delete command
-        delete_node = element.firstChildElement().firstChildElement()
-        self.files[element['name']].buffer_request(element)
-        offset = int(delete_node['pos'])
-        length = int(delete_node['len'])
-        self.service.delete_vim(offset, length,
-                              self.files.keys()[0].encode('ascii', 'ignore'))
-
-    def insert(self, element):
-        """
-        This will send an insert text command to teh associated Vim instance.
-
-        """
-        insert_node = element.firstChildElement().firstChildElement()
-        offset = insert_node['pos']
-        self.service.insert_vim(str(insert_node).encode('ascii', 'ignore'), int(offset),
-                              self.files.keys()[0].encode('ascii', 'ignore'))
-
+        self.buffers[element['name']].buffer_request(element)
 
     def subscribe(self, element):
         # TODO this needs to be more robust and really ack
-        self.xmlstream.send(u'<group publisher="you" name="InfDirectory">'
-                            '<subscribe-ack/></group>')
+        ack = domish.Element(('', 'subscribe-ack'))
+        self.send_node(ack, element['name'])
 
     def explore_end(self, element):
         """
         Once we get the explore-end then we can send anotheer message.
         """
-        self.service.new_buffer(self.files.keys()[0].encode('ascii', 'ignore'))
-        file_id = self.files.values()[0]
-        self.xmlstream.send(u'<group publisher="you" name="InfDirectory">'
-                            '<subscribe-session seq="2" id="' + str(file_id) + '"/>'
-                            '</group>')
+        # TODO add some kind of hold off until this finishes logic???
+        pass
 
     def subscribe_session(self, element):
         """
@@ -113,10 +103,10 @@ class InfinotedProtocol(object):
         confirmation
 
         """
+        # TODO need to condition on InfDirectory vs chat, possibly???
         node = element.firstChildElement()
-        #TODO need to condition on InfDirectory vs chat, possibly???
-        self.session = node['group']
-        self.files[node['id']] = InfinotedBuffer(self, node['id'])
+
+        self.buffers[node['group']] = InfinotedBuffer(self, element)
 
     def sync_begin(self, element):
         """
@@ -135,26 +125,24 @@ class InfinotedProtocol(object):
         """
         This is the message to update the buffer with what gobby has.
         """
-        node = element.firstChildElement()
-        self.service.sync_vim(str(node).encode('ascii', 'ignore'),
-                              self.files.keys()[0].encode('ascii', 'ignore'))
+        self.buffers[element['name']].event_sync(element)
 
     def sync_end(self, element):
         """
         Done with syncing send back an ack
         """
-        self.xmlstream.send(u'<group publisher="you" name="' + element['name'] + '">'
-                            '<sync-ack/></group>')
-        self.user_join(self.session)
+        ack = domish.Element(('', 'sync-ack'))
+        self.send_node(ack, element['name'])
+        self.user_join(element)
 
-    def user_join(self, name):
+    def user_join(self, element):
         """
         This will join to a file or a chat group
         """
-        self.xmlstream.send(u'<group publisher="you" name="' + name + '">'
-                            '<user-join seq="0" name="Bob" status="active" '
-                            'time="" caret="0" hue="0.28028500000000001"/>'
-                            '</group>')
+        user_attribs = {'seq': 0, 'name': 'Bob', 'status': 'active', 'time': '',
+                        'caret': 0, 'hue': 0.28028500000000001}
+        user = domish.Element(('', 'user-join'), attribs=user_attribs)
+        self.send_node(user, element['name'])
 
     def user_rejoin(self, element):
         """
@@ -173,27 +161,31 @@ class InfinotedProtocol(object):
         """
         This will add a file to the list of available files.
         """
-
-        # There may be a better way to hook but i keep getting the root, not the
-        # element I care about
         node = element.firstChildElement()
+
+        # TODO need to handle directories
         self.files[node['name']] = node['id']
 
     def welcome(self, element):
-        self.xmlstream.send(u'<group publisher="you" name="InfDirectory"><explore-node '
-                            'seq="0" id="0" /></group>')
+        explore_attribs = {'seq': 0, 'id': 0}
+        explore = domish.Element(('', 'explore-node'), attribs=explore_attribs)
+        self.send_node(explore, element['name'])
 
     def challenge(self, element):
-        # Super hack not sure the exact problem but looking at RFC 2245 anonymous sasl
-        # should still work with challenge response
+        def get_response(s):
+            return s + 'hello'
+
+        # Super hack not sure the exact problem but looking at RFC 2245
+        # anonymous sasl should still work with challenge response
         event, observers = self.xmlstream._getEventAndObservers('/challenge')
 
-        # Grab priority 0 observer callbacks
+        # Grab priority 0 observer callbacks and monkeypatch the anonymouse
+        # authentication
         for observer in observers[0].values():
             for callback in observer.callbacks:
                 if callback.im_class == SASLInitiatingInitializer:
-                    if not getattr(callback.im_self.mechanism, 'getResponse', None):
-                        callback.im_self.mechanism.getResponse = lambda s: s + 'hello'
+                    if not hasattr(callback.im_self.mechanism, 'getResponse'):
+                        callback.im_self.mechanism.getResponse = get_response
 
     def authenticated(self, xs):
         log.msg('Authenticated.')

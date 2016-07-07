@@ -51,8 +51,8 @@ class VimBeansProtocol(Protocol):
         #: dictionary of bufid to VimFileBuffer objects.  Uses strings to
         #: represent the entries so they can be used directly from Vim.  Note
         #: '0' is this object.
-        self.files = {}
-        self.files['0'] = self
+        self.buffers = {}
+        self.buffers['0'] = self
 
         self.service = service
         self.service.add_protocol(self)
@@ -84,7 +84,7 @@ class VimBeansProtocol(Protocol):
 
             message = line.split(':', 1)
             if message[0].isdigit():
-                self.files[message[0]].process_vim_event(message[1])
+                self.buffers[message[0]].process_vim_event(message[1])
 
             # Maybe later handle Replies which use spaces but for now just
             # ignore them
@@ -106,7 +106,7 @@ class VimBeansProtocol(Protocol):
         TODO need to associate the buffer number with infinoted
 
         """
-        self.files[str(self.bufid)] = VimFileBuffer(self, self.bufid)
+        self.buffers[str(self.bufid)] = VimFileBuffer(self, self.bufid)
         self.transport.write(str(self.bufid) + ':putBufferNumber!2 ' +
                              filename + '\n')
 
@@ -149,7 +149,7 @@ class VimBeansProtocol(Protocol):
         """
         Create a new buffer with name in Vim.
         """
-        self.files[self.bufid] = VimFileBuffer(self, self.bufid)
+        self.buffers[self.bufid] = VimFileBuffer(self, self.bufid)
         self.transport.write(str(self.bufid) + ':create!0\n')
         self.transport.write(str(self.bufid) + ':setTitle!0 "' +
                              filename + '"\n')
