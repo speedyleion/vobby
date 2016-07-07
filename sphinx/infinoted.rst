@@ -253,7 +253,7 @@ method
 seq
     Believe it to be ``<client_id>/<request_seq>``.
 
-The client then sneds a subscription Ack.  It looks like the only thing is the
+The client then sends a subscription Ack.  It looks like the only thing is the
 new `subscribe-ack` node as well as the `id` of the requested file.
 
 .. code-block:: xml

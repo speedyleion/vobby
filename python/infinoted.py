@@ -11,6 +11,7 @@ from twisted.words.protocols.jabber.jid import JID
 from twisted.words.protocols.jabber.sasl import SASLInitiatingInitializer
 from twisted.python import log
 
+from .infinotedbuffer import InfinotedBuffer
 
 class InfinotedProtocol(object):
     """
@@ -143,10 +144,9 @@ class InfinotedProtocol(object):
 
         """
         node = element.firstChildElement()
+        #TODO need to condition on InfDirectory vs chat, possibly???
         self.session = node['group']
-        self.xmlstream.send(u'<group publisher="you" name="InfDirectory">'
-                            '<subscribe-ack id="' + node['id'] + '"/>'
-                            '</group>')
+        self.files[node['id']] = InfinotedBuffer(self, node['id'])
 
     def sync_begin(self, element):
         """
@@ -231,7 +231,24 @@ class InfinotedProtocol(object):
         presence = domish.Element((None, 'presence'))
         xs.send(presence)
 
-    def send_request(self, request):
+    def send_node(self, node, name):
+        """Sends a node wrapped in the root `group` node
+
+        Args:
+            node (domish.Element): The node to send
+
+            name (str): The name attribute of the group node.  Usually the
+                        buffer name or InfDirectory
+
+        """
+        group_attribs = {'publisher': 'you', 'name': name}
+        group_node = domish.Element(('', 'group'), attribs=group_attribs)
+        group_node.addChild(node)
+
+        # Send the actual message
+        self.protocol.xmlstream.send(group_node.toXml())
+
+    def send_request(self, request, name):
         """Sends a buffer modification request to the infinoted server
 
         This will build up the request structure and send the message up the
@@ -241,17 +258,15 @@ class InfinotedProtocol(object):
             request (domish.Element): The request operation element.  Something
                                       like <insert-caret> or <delete-caret>.
 
-        """
-        # Create the request operation wrapper nodes
-        root_attribs = {'publisher': 'you', 'name': self.session}
-        root_node = domish.Element(('', 'group'), attribs=root_attribs)
+            name (str): The name attribute of the group node.  Usually the
+                        buffer name or InfDirectory
 
+        """
+        # Create the request operation wrapper node
         request_attribs = {'user': self.user_id, 'time': ''}
         request_node = domish.Element(('', 'request'), attribs=request_attribs)
-        root_node.addChild(request_node)
 
         # Add the request operation node
         request_node.addChild(request)
 
-        # Send the actual message
-        self.protocol.xmlstream.send(root_node.toXml())
+        self.send_node(self, request_node, name)

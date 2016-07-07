@@ -17,9 +17,16 @@ class InfinotedBuffer(FileBuffer):
 
             id (string): The file id from the infinoted server.
 
+        This will send the ack back to the infinoted server
+
         """
         self.protocol = protocol
         self.id = id
+
+        # Send the ack
+        node = domish.Element(('', 'subscribe-ack'))
+        node['id'] = id
+        self.protocol.send_node(node, 'InfDirectory')
 
     def delete(self, offset, length, user=None):
         """
@@ -47,7 +54,7 @@ class InfinotedBuffer(FileBuffer):
         delete_node = domish.Element(('', 'delete-caret'),
                                      attribs=delete_attribs)
 
-        self.protocol.send_request(delete_node)
+        self.protocol.send_request(delete_node, self.id)
 
     def insert(self, content, offset, user=None):
         """
@@ -73,7 +80,7 @@ class InfinotedBuffer(FileBuffer):
         insert_node = domish.Element(('', 'insert-caret'))
         insert_node['pos'] = offset  # TODO check the int to string stuff here??
         insert_node.addContent(content)
-        self.protocol.send_request(insert_node)
+        self.protocol.send_request(insert_node, self.id)
 
     def sync(self, content):
         """
