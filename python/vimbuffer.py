@@ -1,4 +1,5 @@
-""" Implements the Filebuffer for Vim interfaces
+"""
+Implements the Filebuffer for Vim interfaces
 
 
 """
@@ -122,7 +123,7 @@ class VimFileBuffer(FileBuffer):
     def event_insert(self, insert_args):
         """This will process an `insert` event from Vim
 
-        This will notify all of :attr:`buffers` about the insetion of text by
+        This will notify all of :attr:`buffers` about the insertion of text by
         Vim.
 
         Args:

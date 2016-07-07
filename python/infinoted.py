@@ -60,21 +60,22 @@ class InfinotedProtocol(object):
         xs.addObserver('/group/add-node', self.add_node)
         xs.addObserver('/group/sync-segment', self.sync_segment)
         xs.addObserver('/group/sync-user', self.sync_user)
-        xs.addObserver('/group/request/insert-caret', self.insert)
-        xs.addObserver('/group/request/delete-caret', self.delete)
+        xs.addObserver('/group/request', self.process_buffer_request)
 
-    def delete(self, element):
-        """ Directs the deletion request to the proper buffer to be handled
+    def process_buffer_request(self, element):
+        """ Directs the file update requests to the proper buffer instance
 
         Args:
-            element (domish.Element): The element to delete.  Not fully
-                                      understanding twisted but this seems to
-                                      give more or less the entire element tree
-                                      not just the actual delete command element
+            element (domish.Element): The element to update.
+
+        Not fully understanding twisted but this seems to give more or less the
+        entire element tree not just the actual request command element.
+        However it makes it nice to dispatch to the correct buffer object.
 
         """
         # Navigate down to the actual delete command
         delete_node = element.firstChildElement().firstChildElement()
+        self.files[element['name']].buffer_request(element)
         offset = int(delete_node['pos'])
         length = int(delete_node['len'])
         self.service.delete_vim(offset, length,

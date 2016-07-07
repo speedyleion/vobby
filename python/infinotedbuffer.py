@@ -6,6 +6,7 @@ from twisted.words.xish import domish
 
 from .file_buffer import FileBuffer
 
+
 class InfinotedBuffer(FileBuffer):
     """
     This is the buffer interface for infinoted buffers
@@ -95,3 +96,53 @@ class InfinotedBuffer(FileBuffer):
         """
         # HACK for now just insert it all
         self.insert(content, 0, None)
+
+    def buffer_request(self, element):
+        """Handle buffer update request
+
+        Args:
+            element (domish.Element): The root `group` element of the request
+
+        """
+        # Second child is the actual event.  Infinoted protocol uses '-' but
+        # those aren't valid method characters so convert them to '_'.
+        event = element.firstChildElement().firstChildElement().name
+        event.replace('-', '_')
+
+        method = getattr(self, 'event_{}'.format(event), None)
+        if method:
+            method(element)
+
+    def event_insert_caret(self, element):
+        """ Process an `insert-caret` request from Infinoted
+
+        This will notify all of :attr:`buffers` about the insertion of text as
+        requested by the Infinoted server.
+
+        Args:
+            element (domish.Element): The root element of the request
+
+        """
+        insert_node = element.firstChildElement().firstChildElement()
+        offset = insert_node['pos']
+        content = insert_node.content  # TODO does this need ascii/vs utf8???
+
+        for buf in self.buffers:
+            buf.insert(int(offset), content)
+
+    def event_delete_caret(self, element):
+        """ Process a `delete-caret` request for Infinoted
+
+        This will notify all of :attr:`buffers` about the deletion of text by
+        the Infinoted server.
+
+        Args:
+            element (domish.Element): The root element of the request
+
+        """
+        delete_node = element.firstChildElement().firstChildElement()
+        offset = delete_node['pos']
+        length = delete_node['len']
+
+        for buf in self.buffers:
+            buf.delete(int(offset), int(length))
