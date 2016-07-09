@@ -14,12 +14,6 @@ let s:script_folder_path = escape( expand( '<sfile>:p:h' ), '\' )
 
 py import sys
 exe 'python sys.path.insert( 0, "' . s:script_folder_path . '/../python" )'
+exe 'python "' . s:script_folder_path . '/../python/run.py"'
 
 " Launch the server
-python << EOF
-import run
-run.main()
-
-EOF
-
-

@@ -139,8 +139,8 @@ class InfinotedProtocol(object):
         """
         This will join to a file or a chat group
         """
-        user_attribs = {'seq': 0, 'name': 'Bob', 'status': 'active', 'time': '',
-                        'caret': 0, 'hue': 0.28028500000000001}
+        user_attribs = {'seq': '0', 'name': 'Bob', 'status': 'active', 'time': '',
+                        'caret': '0', 'hue': '0.28028500000000001'}
         user = domish.Element(('', 'user-join'), attribs=user_attribs)
         self.send_node(user, element['name'])
 
@@ -167,7 +167,7 @@ class InfinotedProtocol(object):
         self.files[node['name']] = node['id']
 
     def welcome(self, element):
-        explore_attribs = {'seq': 0, 'id': 0}
+        explore_attribs = {'seq': '0', 'id': '0'}
         explore = domish.Element(('', 'explore-node'), attribs=explore_attribs)
         self.send_node(explore, element['name'])
 
@@ -208,7 +208,7 @@ class InfinotedProtocol(object):
         group_node.addChild(node)
 
         # Send the actual message
-        self.protocol.xmlstream.send(group_node)
+        self.xmlstream.send(group_node)
 
     def send_request(self, request, name):
         """Sends a buffer modification request to the infinoted server

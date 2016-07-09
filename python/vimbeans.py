@@ -26,6 +26,7 @@ This handles communicating with Vim through the netbeans interface.
 """
 from twisted.internet.protocol import Protocol, ServerFactory
 from twisted.python import log
+import re
 
 from vimbuffer import VimFileBuffer
 
@@ -160,6 +161,24 @@ class VimBeansProtocol(Protocol):
         self.transport.write(str(self.bufid) + ':setContentType!0\n')
         self.transport.write(str(self.bufid) + ':startDocumentListen!0\n')
         self.bufid += 1
+
+    def process_vim_event(self, event):
+        """ Handle a message from Vim
+
+        This will parse a Vim message and disposition it appropriately
+
+        Parameters:
+            message (string): The message from Vim.  Can be any message provided
+                              it was for this buffer.
+
+        """
+
+        event_name, args = re.split('[ =]', event, 1)
+
+        method = getattr(self, 'event_{}'.format(event_name), None)
+
+        if method:
+            method(args)
 
 
 class VimBeansFactory(ServerFactory):
