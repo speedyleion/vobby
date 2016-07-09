@@ -6,6 +6,8 @@ Implements the Filebuffer for Vim interfaces
 
 import re
 
+from twisted.python import log
+
 from file_buffer import FileBuffer
 
 
@@ -148,3 +150,38 @@ class VimFileBuffer(FileBuffer):
         offset, length = remove_args.split(' ', 1)
         for buf in self.buffers:
             buf.delete(int(offset), int(length))
+
+    def event_keyCommand(self, command):
+        """Key commands are generic commands to Vobby from Vim
+
+        This will verify a propper key command and dispatch as necessary.  Only
+        if the first word is `vobby` will this command be processed, otherwise
+        it will be silently ignored.
+
+        Args:
+            command (string): The key command to process.
+
+        """
+        # First element always appears to be "0" after that strip off the quotes
+        # and process as a string
+        _, real_command = command.split(' ', 1)
+        real_command = real_command[1:-1]
+        if not real_command.startswith('vobby'):
+            return
+
+        args = real_command.split(' ')
+
+        # dispatch to the appropriate command
+        method = getattr(self, 'command_{}'.format(args[1]), None)
+
+        log.msg('method is %s' % method)
+        if method:
+            method(args[1:])
+
+    def command_hello(self, *reply):
+        """
+            Dummy method to try handling nbkey commands
+        """
+
+        log.msg('Hello command %s' % reply)
+

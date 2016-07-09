@@ -24,9 +24,11 @@ This handles communicating with Vim through the netbeans interface.
             *---------*---------*
 
 """
+
+import re
+
 from twisted.internet.protocol import Protocol, ServerFactory
 from twisted.python import log
-import re
 
 from vimbuffer import VimFileBuffer
 
