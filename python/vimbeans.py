@@ -150,7 +150,7 @@ class VimBeansProtocol(Protocol):
         """
         Create a new buffer with name in Vim.
         """
-        self.buffers[self.bufid] = VimFileBuffer(self, self.bufid)
+        self.buffers[str(self.bufid)] = VimFileBuffer(self, self.bufid)
         self.transport.write(str(self.bufid) + ':create!0\n')
         self.transport.write(str(self.bufid) + ':setTitle!0 "' +
                              filename + '"\n')
@@ -173,12 +173,23 @@ class VimBeansProtocol(Protocol):
 
         """
 
+        log.msg('Processing %s' % (event))
         event_name, args = re.split('[ =]', event, 1)
 
         method = getattr(self, 'event_{}'.format(event_name), None)
 
         if method:
             method(args)
+
+    def event_startupDone(self, *args):
+        """Initializes the rest of the connection with Vim
+
+        Args:
+            *args (list): For startup this should be 0
+
+        """
+        # Create a dummy vobby buffer
+        self.new_buffer('vobby')
 
 
 class VimBeansFactory(ServerFactory):

@@ -4,6 +4,8 @@ Implements the Filebuffer for Vim interfaces
 
 """
 
+import re
+
 from file_buffer import FileBuffer
 
 
@@ -107,13 +109,7 @@ class VimFileBuffer(FileBuffer):
                               it was for this buffer.
 
         """
-
-        # Vim events are of the form '<BufferID>:<event> [[args] [args]]'
-        # Strip off the buffer id and make sure it's valid
-        bufid, command = event.split(':', 1)
-        assert(bufid == self.bufid)
-
-        event_name, args = command.split(' ', 1)
+        event_name, args = re.split('[ =]', event, 1)
 
         method = getattr(self, 'event_{}'.format(event_name), None)
 
