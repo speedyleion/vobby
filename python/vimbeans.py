@@ -27,7 +27,7 @@ This handles communicating with Vim through the netbeans interface.
 from twisted.internet.protocol import Protocol, ServerFactory
 from twisted.python import log
 
-from .vimbuffer import VimFileBuffer
+from vimbuffer import VimFileBuffer
 
 VIM_SPECIAL_MESSAGES = ['AUTH', 'DISCONNECT', 'DETACH', 'REJECT', 'ACCEPT']
 

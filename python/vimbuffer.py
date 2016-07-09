@@ -4,7 +4,7 @@ Implements the Filebuffer for Vim interfaces
 
 """
 
-from .file_buffer import FileBuffer
+from file_buffer import FileBuffer
 
 
 class VimFileBuffer(FileBuffer):

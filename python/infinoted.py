@@ -13,7 +13,7 @@ from twisted.words.protocols.jabber.jid import JID
 from twisted.words.protocols.jabber.sasl import SASLInitiatingInitializer
 from twisted.python import log
 
-from .infinotedbuffer import InfinotedBuffer
+from infinotedbuffer import InfinotedBuffer
 
 class InfinotedProtocol(object):
     """

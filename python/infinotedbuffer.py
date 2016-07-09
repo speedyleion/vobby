@@ -4,7 +4,7 @@ Implements the FileBuffer interface for infinoted buffers
 
 from twisted.words.xish import domish
 
-from .file_buffer import FileBuffer
+from file_buffer import FileBuffer
 
 
 class InfinotedBuffer(FileBuffer):
