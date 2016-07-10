@@ -4,24 +4,24 @@ This handles communicating with Vim through the netbeans interface.
 
 .. raw::
 
-            *-------------------*
-            |  VimBeansProtocol |
-            *---------*---------*
-                     / \
-                    /   \
-    *---------------*    *---------------*
-    | VimFileBuffer |    | VimFileBuffer |
-    *---------------*    *-------*-------*
-            |                    |
-            |                    |
-    *---------------*    *---------------*
-    | IDEFileBuffer |    | IDEFileBuffer |
-    *---------------*    *-------*-------*
-                    \   /
-                     \ /
-            *---------*---------*
-            |  OtherIDEProtocol |
-            *---------*---------*
+            +-------------------+
+            |  VimBeansProtocol *----------------------*
+            +---------*---------+                      |
+                     / \                               |
+                    /   \                              |
+    +---------------*    *---------------+   +---------*-----------+
+    | VimFileBuffer |    | VimFileBuffer |   | VimDirectoryManager |
+    +-------+-------+    +-------+-------+   +---------*-----------+
+            |                    |                     |
+            |                    |                     |
+    +-------+-------+    +-------+-------+   +---------*-----------+
+    | IDEFileBuffer |    | IDEFileBuffer |   | IDEDirectoryManager |
+    +---------------*    *---------------+   +---------*-----------+
+                    \   /                              |
+                     \ /                               |
+            +---------*---------+                      |
+            |  OtherIDEProtocol *----------------------+
+            +-------------------+
 
 """
 
@@ -183,11 +183,11 @@ class VimBeansProtocol(Protocol):
         if method:
             method(args)
 
-    def event_startupDone(self, *args):
+    def event_startupDone(self, args):
         """Initializes the rest of the connection with Vim
 
         Args:
-            *args (list): For startup this should be 0
+            args (string): For startup this should be 0
 
         """
         # Create a dummy vobby buffer

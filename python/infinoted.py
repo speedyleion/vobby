@@ -95,7 +95,10 @@ class InfinotedProtocol(object):
         Once we get the explore-end then we can send anotheer message.
         """
         # TODO add some kind of hold off until this finishes logic???
-        pass
+
+        # Need to broadcast that the file listing is available
+        for f in self.files:
+            log.msg('Files are %s' % f)
 
     def subscribe_session(self, element):
         """
@@ -188,10 +191,13 @@ class InfinotedProtocol(object):
                         callback.im_self.mechanism.getResponse = get_response
 
     def authenticated(self, xs):
-        log.msg('Authenticated.')
+        # Not sure if this needs to do anything???
+        pass
 
-        presence = domish.Element((None, 'presence'))
-        xs.send(presence)
+        # log.msg('Authenticated.')
+
+        # presence = domish.Element((None, 'presence'))
+        # xs.send(presence)
 
     def send_node(self, node, name):
         """Sends a node wrapped in the root `group` node
