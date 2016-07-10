@@ -103,6 +103,12 @@ class Directory(object):
                 self.sub_directories.remove(sub_dir)
                 break
 
+    def is_dir(self):
+        return True
+
+    def is_file(self):
+        return False
+
 
 class IDEFile(object):
     """
@@ -121,3 +127,9 @@ class IDEFile(object):
             raise OSError('Files always need a root directory')
         self.name = name
         self.parent = parent
+
+    def is_dir(self):
+        return False
+
+    def is_file(self):
+        return True
