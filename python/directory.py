@@ -63,3 +63,61 @@ class Directory(object):
         self.mkdir(sub_dirs[0])
         if len(sub_dirs) > 1:
             self.sub_directories[-1].makedirs(sub_dirs[1])
+
+    def mknod(self, path):
+        """Create a filename "node"
+
+        Args:
+            path (string): The file to create
+
+        """
+        # TODO should probably handle path that is 'a/b/filename.x'
+        self.files.append(IDEFile(path, self))
+
+    def remove(self, path):
+        """Remove a file
+
+        Args:
+            path (string): File to remove
+
+        Raises OSError if path isn't a file
+
+        """
+        # TODO add some error handling
+        for f in self.files:
+            if f.name == path:
+                self.files.remove(f)
+                break
+
+    def rmdir(self, path):
+        """ Remove directory
+
+        Args:
+            path (string): Directory to remove
+
+        Raises OSError if the directory isn't empty
+
+        """
+        for sub_dir in self.sub_directories:
+            if sub_dir.name == path:
+                self.sub_directories.remove(sub_dir)
+                break
+
+
+class IDEFile(object):
+    """
+    A basic file object.
+    """
+
+    def __init__(self, name, parent):
+        """Directory and its name
+
+        Args:
+            name (string): The file name
+            parent (Directory): The parent directory.
+
+        """
+        if not parent:
+            raise OSError('Files always need a root directory')
+        self.name = name
+        self.parent = parent
