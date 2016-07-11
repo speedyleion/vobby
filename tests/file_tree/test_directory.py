@@ -4,6 +4,7 @@ shared IDE files.
 
 """
 
+from collections import namedtuple
 import unittest
 
 from directory import Directory
@@ -17,12 +18,20 @@ class TestDirectory(unittest.TestCase):
     """
 
     def test_basic_dir(self):
+        ExpectedDir = namedtuple('Directory', ['dirs', 'files'])
+        tree = {}
+        tree['root'] = ExpectedDir(set(['sub_directory_1', 'sub_directory_2']),
+                                   set(['file_1', 'file_2']))
+        tree['sub_directory_1'] = ExpectedDir(set(), set())
+        tree['sub_directory_2'] = ExpectedDir(set(['sub_directory_1']),
+                                              set(['file_1', 'file_2']))
+
         for root, dirs, files in self.root.walk():
             self.assertEquals(root.name, 'root')
             self.assertSetEqual(set([f.name for f in files]),
-                                set(['file_1', 'file_2']))
+                                tree[root.name].files)
             self.assertSetEqual(set([directory.name for directory in dirs]),
-                                set(['sub_directory_1', 'sub_directory_2']))
+                                tree[root.name].dirs)
 
     def setUp(self):
         # create a basic directory structure for general testing
