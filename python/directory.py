@@ -23,8 +23,8 @@ class Directory(object):
         """
         self.name = name
         self.parent = parent
-        self.sub_directories = []
-        self.files = []
+        self.sub_directories = {}
+        self.files = {}
 
     def walk(self):
         """
@@ -43,11 +43,11 @@ class Directory(object):
         Raises OSError if the directory already exists
 
         """
-        for sub_dir in self.sub_directories:
-            if sub_dir.name == path:
-                raise OSError('Subdirectory %s already exists' % path)
+        if path in any(self.sub_directories, self.files):
+            raise OSError("Cannot create a file when that file already exists: "
+                          "'%s'" % path)
 
-        self.sub_directories.append(Directory(path, self))
+        self.sub_directories[path] = Directory(path, self)
 
     def makedirs(self, path):
         """Recursively creates subdirectories
