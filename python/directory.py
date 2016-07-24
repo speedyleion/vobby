@@ -86,8 +86,16 @@ class Directory(object):
             path (string): The file to create
 
         """
-        # TODO should probably handle path that is 'a/b/filename.x'
-        self.files[path] = IDEFile(path, self)
+        # TODO rework this really this should probably be sub_dir.mknod and then
+        # when it gets to nothing that does self.files[fname]...
+        sub_dirs = path.rsplit('/', 1)
+        if len(sub_dirs) > 1:
+            fname = sub_dirs[1]
+            sub_dir = self._get_sub_directory(sub_dirs[0])
+        else:
+            fname = path
+            sub_dir = self
+        sub_dir.files[fname] = IDEFile(fname, sub_dir)
 
     def remove(self, path):
         """Remove a file
@@ -123,6 +131,41 @@ class Directory(object):
 
     def is_file(self):
         return False
+
+    def __repr__(self):
+        return self.name
+
+    def _get_sub_directory(self, path):
+        """
+        This will return a nested sub directory. Or self if path is None
+
+
+        Args:
+            path (string): The path to get.
+
+        Returns:
+            Directory
+
+        Example:
+            self._get_sub_directory('sub_1/sub_2/sub_3')
+            would return the sub_3 directory instance.
+
+        Raises:
+            OSError if the directory doesn't exist
+
+
+        """
+        if not path:
+            return self
+
+        sub_dirs = path.split('/', 1)
+        try:
+            if len(sub_dirs) > 1:
+                return self.sub_directories[sub_dirs[0]]._get_sub_directory(sub_dirs[1])
+            else:
+                return self.sub_directories[sub_dirs[0]]
+        except KeyError:
+            raise OSError("Subdirectory %s doesn't exist" % (sub_dirs[0],))
 
 
 class IDEFile(object):
