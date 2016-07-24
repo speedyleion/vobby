@@ -32,7 +32,12 @@ class Directory(object):
         root of this directory
 
         """
-        return
+        # First yield ourself
+        yield self, self.sub_directories.itervalues(), self.files.itervalues()
+
+        # Now iterate through all subdirectories
+        for sub in self.sub_directories.itervalues():
+            yield sub.walk()
 
     def mkdir(self, path):
         """Create subdirectory
