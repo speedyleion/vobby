@@ -43,7 +43,7 @@ class Directory(object):
         Raises OSError if the directory already exists
 
         """
-        if path in any(self.sub_directories, self.files):
+        if path in self.sub_directories or path in self.files:
             raise OSError("Cannot create a file when that file already exists: "
                           "'%s'" % path)
 
@@ -58,11 +58,21 @@ class Directory(object):
         Raises OSError if the directory already exists
 
         """
-        # This isn't ideal but more or less works for now
+        # This isn't ideal in that it can create part of the tree and fail out,
+        # leaving part of the tree there.
         sub_dirs = path.split('/', 1)
-        self.mkdir(sub_dirs[0])
         if len(sub_dirs) > 1:
-            self.sub_directories[-1].makedirs(sub_dirs[1])
+            # Try to make parent directory and ignore OSError if it already
+            # exists
+            try:
+                self.mkdir(sub_dirs[0])
+            except OSError:
+                pass
+
+            self.sub_directories[sub_dirs[0]].makedirs(sub_dirs[1])
+
+        else:
+            self.mkdir(path)
 
     def mknod(self, path):
         """Create a filename "node"
@@ -72,7 +82,7 @@ class Directory(object):
 
         """
         # TODO should probably handle path that is 'a/b/filename.x'
-        self.files.append(IDEFile(path, self))
+        self.files[path] = IDEFile(path, self)
 
     def remove(self, path):
         """Remove a file
