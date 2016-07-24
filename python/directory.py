@@ -37,7 +37,8 @@ class Directory(object):
 
         # Now iterate through all subdirectories
         for sub in self.sub_directories.itervalues():
-            yield sub.walk()
+            for root, dirs, files in sub.walk():
+                yield (root, dirs, files)
 
     def mkdir(self, path):
         """Create subdirectory
