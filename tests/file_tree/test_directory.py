@@ -15,9 +15,16 @@ class TestDirectory(unittest.TestCase):
     """
     Tests the directory functionality
 
+    :meth:`setUp` actually ends up testing the basics of making directories as
+    well as making nodes
+
     """
 
-    def test_basic_dir(self):
+    def test_walk(self):
+        """
+        This test the walk functionality.
+
+        """
         ExpectedDir = namedtuple('Directory', ['dirs', 'files'])
         tree = {}
         tree['root'] = ExpectedDir(set(['sub_directory_1', 'sub_directory_2']),
@@ -28,7 +35,6 @@ class TestDirectory(unittest.TestCase):
 
         viewed_dirs = []
         for root, dirs, files in self.root.walk():
-            # self.assertEquals(root.name, 'root')
             self.assertSetEqual(set([f.name for f in files]),
                                 tree[root.name].files)
             self.assertSetEqual(set([directory.name for directory in dirs]),
