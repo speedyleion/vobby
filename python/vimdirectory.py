@@ -4,6 +4,8 @@ Handles the creation and communication of the shared file directory structure.
 
 """
 
+from directory import Directory
+
 
 class VimDirectory(Directory):
 
@@ -16,4 +18,4 @@ class VimDirectory(Directory):
 
     def __init__(self):
         """TODO: to be defined1. """
-
+        pass

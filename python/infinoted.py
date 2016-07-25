@@ -14,6 +14,8 @@ from twisted.words.protocols.jabber.sasl import SASLInitiatingInitializer
 from twisted.python import log
 
 from infinotedbuffer import InfinotedBuffer
+from Infinoteddirectory import InfinotedDirectory
+
 
 class InfinotedProtocol(object):
     """
@@ -31,11 +33,10 @@ class InfinotedProtocol(object):
         connector.connect()
         self.finished = Deferred()
 
-        #: This contains a mapping of files to their "names".  Infinoted
-        #: references files by a numeric ID.  Humans reference them by names.
-        #: Everyone will communicate to this via file strings
-        self.files = {}
-
+        #: This maps the infinoted id to a directory structure. '0' is always
+        #: the root
+        self.directory = {'0': InfinotedDirectory('')}
+        self.directory['0'].id = '0'
 
         #: dictionary of sessionnames to InfinotedFileBuffer objects.
         self.buffers = {}
@@ -97,8 +98,7 @@ class InfinotedProtocol(object):
         # TODO add some kind of hold off until this finishes logic???
 
         # Need to broadcast that the file listing is available
-        for f in self.files:
-            log.msg('Files are %s' % f)
+        log.msg('Files are %s', self.directory)
 
     def subscribe_session(self, element):
         """
@@ -162,12 +162,18 @@ class InfinotedProtocol(object):
 
     def add_node(self, element):
         """
-        This will add a file to the list of available files.
+        This will add a directory or file to the directory structure.
         """
         node = element.firstChildElement()
 
         # TODO need to handle directories
-        self.files[node['name']] = node['id']
+        if node['type'] == 'InfText':
+            f_object = self.directory[node['parent']].mknod(node['name'])
+            self.directory[node['id']] = f_object
+            f_object.id = node['id']
+
+        else:
+            log.msg('Non text node found: %s', node['type'])
 
     def welcome(self, element):
         explore_attribs = {'seq': '0', 'id': '0'}

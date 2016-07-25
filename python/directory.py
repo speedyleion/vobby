@@ -98,6 +98,10 @@ class Directory(object):
             sub_dir = self
         sub_dir.files[fname] = IDEFile(fname, sub_dir)
 
+        # This deviates, but I need/want some way to access the file object
+        # right away
+        return sub_dir.files[fname]
+
     def remove(self, path):
         """Remove a file
 

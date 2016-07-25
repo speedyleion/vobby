@@ -54,8 +54,7 @@ class VimBeansProtocol(Protocol):
         #: dictionary of bufid to VimFileBuffer objects.  Uses strings to
         #: represent the entries so they can be used directly from Vim.  Note
         #: '0' is this object.
-        self.buffers = {}
-        self.buffers['0'] = self
+        self.buffers = {'0': self}
 
         self.service = service
         self.service.add_protocol(self)
