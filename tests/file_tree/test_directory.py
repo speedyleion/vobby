@@ -26,12 +26,16 @@ class TestDirectory(unittest.TestCase):
         tree['sub_directory_2'] = ExpectedDir(set(['sub_directory_1']),
                                               set(['file_1', 'file_2']))
 
+        viewed_dirs = []
         for root, dirs, files in self.root.walk():
             # self.assertEquals(root.name, 'root')
             self.assertSetEqual(set([f.name for f in files]),
                                 tree[root.name].files)
             self.assertSetEqual(set([directory.name for directory in dirs]),
                                 tree[root.name].dirs)
+            viewed_dirs.append(root.name)
+
+        self.assertSetEqual(set(viewed_dirs), set(tree.keys()))
 
     def setUp(self):
         # create a basic directory structure for general testing
