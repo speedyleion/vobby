@@ -16,7 +16,7 @@ class InfinotedDirectory(directory.Directory):
 
     """
     def __init__(self, name, parent=None):
-        super(InfinotedDirectory, self, name, parent).__init__()
+        super(InfinotedDirectory, self).__init__(name, parent)
         self.id = None
 
 
@@ -28,5 +28,5 @@ class InfinotedFile(directory.IDEFile):
 
     """
     def __init__(self, name, parent=None):
-        super(InfinotedFile, self, parent).__init__()
+        super(InfinotedFile, self, parent).__init__(name, parent)
         self.id = None

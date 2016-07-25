@@ -14,7 +14,7 @@ from twisted.words.protocols.jabber.sasl import SASLInitiatingInitializer
 from twisted.python import log
 
 from infinotedbuffer import InfinotedBuffer
-from Infinoteddirectory import InfinotedDirectory
+from infinoteddirectory import InfinotedDirectory
 
 
 class InfinotedProtocol(object):
@@ -24,13 +24,6 @@ class InfinotedProtocol(object):
 
     """
     def __init__(self, service):
-        jid = JID('127.0.0.1')
-        f = client.XMPPClientFactory(jid, '')
-        f.addBootstrap(xmlstream.STREAM_CONNECTED_EVENT, self.connected)
-        f.addBootstrap(xmlstream.STREAM_AUTHD_EVENT, self.authenticated)
-        connector = SRVConnector(
-            reactor, 'xmpp-client', jid.host, f, defaultPort=6523)
-        connector.connect()
         self.finished = Deferred()
 
         #: This maps the infinoted id to a directory structure. '0' is always
@@ -41,6 +34,14 @@ class InfinotedProtocol(object):
         #: dictionary of sessionnames to InfinotedFileBuffer objects.
         self.buffers = {}
         self.service = service
+
+        jid = JID('127.0.0.1')
+        f = client.XMPPClientFactory(jid, '')
+        f.addBootstrap(xmlstream.STREAM_CONNECTED_EVENT, self.connected)
+        f.addBootstrap(xmlstream.STREAM_AUTHD_EVENT, self.authenticated)
+        connector = SRVConnector(
+            reactor, 'xmpp-client', jid.host, f, defaultPort=6523)
+        connector.connect()
 
     def rawDataIn(self, buf):
         log.msg("RECV: %s" % unicode(buf, 'utf-8').encode('ascii', 'replace'))
@@ -98,6 +99,7 @@ class InfinotedProtocol(object):
         # TODO add some kind of hold off until this finishes logic???
 
         # Need to broadcast that the file listing is available
+        # import pydevd; pydevd.settrace('localhost', port=5252, stdoutToServer=True, stderrToServer=True)
         log.msg('Files are %s', self.directory)
 
     def subscribe_session(self, element):
