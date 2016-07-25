@@ -134,6 +134,8 @@ class Directory(object):
         return False
 
     def __repr__(self):
+        # TODO would really like this to provide an output similar to the "tree"
+        # command
         return self.name
 
     def _get_sub_directory(self, path):
@@ -162,7 +164,8 @@ class Directory(object):
         sub_dirs = path.split('/', 1)
         try:
             if len(sub_dirs) > 1:
-                return self.sub_directories[sub_dirs[0]]._get_sub_directory(sub_dirs[1])
+                return self.sub_directories[sub_dirs[0]].\
+                        _get_sub_directory(sub_dirs[1])
             else:
                 return self.sub_directories[sub_dirs[0]]
         except KeyError:
