@@ -190,7 +190,14 @@ class VimBeansProtocol(Protocol):
 
         """
         # Create a dummy vobby buffer
-        self.new_buffer('vobby')
+        self.new_buffer('__vobby__')
+
+        # Get the directory structure from the service, this isn't ideal should
+        # be abstracted somehow
+        self.directory = self.service.infinoted.directory['0']
+
+        # For now assume that buffer '1' is always the `__vobby__` buffer
+        self.buffers['1'].insert(str(self.directory), 0)
 
 
 class VimBeansFactory(ServerFactory):

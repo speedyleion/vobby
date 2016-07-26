@@ -140,7 +140,18 @@ class Directory(object):
     def __repr__(self):
         # TODO would really like this to provide an output similar to the "tree"
         # command
-        return self.name
+        # import pydevd; pydevd.settrace('localhost', port=5252, stdoutToServer=True, stderrToServer=True)
+        indent = 4
+        filenames = []
+        for f in self.files:
+            filenames.append(' ' * indent + '*' + '-' * indent + f)
+
+        tree = self.name + '\n'.join(filenames)
+
+        for d in self.sub_directories:
+            tree = tree + str(d)
+
+        return tree
 
     def _get_sub_directory(self, path):
         """

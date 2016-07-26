@@ -53,33 +53,6 @@ class VobbyService(service.Service):
     def start_infinoted(self):
         self.infinoted = InfinotedProtocol(self)
 
-    def sync_vim(self, contents, buffer_name):
-        """
-        This will sync the `contents` with the vim buffer associated with
-        `buffer_name`
-
-        """
-        self.vimbeans.sync(contents, buffer_name)
-
-    def insert_gobby(self, content, offset, buffer_name):
-        self.infinoted.insert_text(content, offset, buffer_name)
-
-    def delete_gobby(self, offset, length, buffer_name):
-        self.infinoted.delete_text(offset, length, buffer_name)
-
-    def insert_vim(self, content, offset, buffer_name):
-        self.vimbeans.insert(content, offset, buffer_name)
-
-    def delete_vim(self, offset, length, buffer_name):
-        self.vimbeans.delete(offset, length, buffer_name)
-
-    def new_buffer(self, buffer_name):
-        """
-        Create a new buffer with name in Vim.
-        """
-        self.vimbeans.new_buffer(buffer_name)
-
-
 # configuration parameters
 port = 3219
 iface = 'localhost'
