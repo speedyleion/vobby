@@ -170,9 +170,10 @@ name
     The name of the file as seen on Gobby clients.
 
 type
-    The type of node `InfText` is a normal text document.  I didn't create a
-    directory structure but it is most likely either `InfDirectory` or from
-    http://infinote.org/protocol/directory/ it may be `InfSubDirectory`.
+    The type of node `InfText` is a normal text document.
+    
+    It appears that `InfSubDirectory` is a subdirectory instance.
+    While `InfDirectory` appears to be the root.
 
 seq
     Believe it to be ``<client_id>/<request_seq>``.

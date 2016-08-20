@@ -173,7 +173,11 @@ class InfinotedProtocol(object):
             f_object = self.directory[node['parent']].mknod(node['name'])
             self.directory[node['id']] = f_object
             f_object.id = node['id']
-
+        elif node['type'] == 'InfSubdirectory':
+            # import pydevd; pydevd.settrace('localhost', port=5252, stdoutToServer=True, stderrToServer=True)
+            dir_ = self.directory[node['parent']].mkdir(node['name'])
+            self.directory[node['id']] = dir_  # TODO this isn't nesting correctly
+            dir_.id = node['id']
         else:
             log.msg('Non text node found: %s', node['type'])
 

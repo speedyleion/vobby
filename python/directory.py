@@ -55,6 +55,10 @@ class Directory(object):
 
         self.sub_directories[path] = Directory(path, self)
 
+        # This deviates, but I need/want some way to access the file object
+        # right away
+        return self.sub_directories[path]
+
     def makedirs(self, path):
         """Recursively creates subdirectories
 
@@ -142,14 +146,18 @@ class Directory(object):
         # command
         # import pydevd; pydevd.settrace('localhost', port=5252, stdoutToServer=True, stderrToServer=True)
         indent = 4
+        prefix = ' ' * indent + '*' + '-' * indent
         filenames = []
         for f in self.files:
-            filenames.append(' ' * indent + '*' + '-' * indent + f)
+            filenames.append(prefix + f)
 
-        tree = self.name + '\n'.join(filenames)
+        filenames.append('')
+        tree = self.name + '\n' + '\n'.join(filenames)
 
         for d in self.sub_directories:
-            tree = tree + str(d)
+            dir_ = str(d).split()
+            dir_ = '\n    '.join(dir_)
+            tree += prefix + dir_
 
         return tree
 

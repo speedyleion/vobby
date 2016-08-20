@@ -75,7 +75,7 @@ class VimBeansProtocol(Protocol):
             data (str): A netbeans string message from Vim.
 
         """
-        log.msg('Recieved data %s' % (data))
+        log.msg('Recieved data %s', data)
 
         for line in data.splitlines():
 
@@ -98,14 +98,12 @@ class VimBeansProtocol(Protocol):
         This will instruct the Vim instance to notify this of changes to the
         `filename`.
 
-        Parameters:
+        Args:
             filename (str): The filename of the Vim buffer to watch.  This will
                             be the filename local to the Vim instance running
 
         Hard coded the sequence numbers as 2 and 3.  Not quite sure yet how to
         utilize or if they need to be.
-
-        TODO need to associate the buffer number with infinoted
 
         """
         self.buffers[str(self.bufid)] = VimFileBuffer(self, self.bufid)
@@ -149,7 +147,13 @@ class VimBeansProtocol(Protocol):
 
     def new_buffer(self, filename):
         """
-        Create a new buffer with name in Vim.
+        Create a new buffer with name `filenmae` in Vim.
+
+        Args:
+            filename (str): The filename to use.  Note that by default Vim will
+                            save this to the current directory if the user saves
+                            with `:w` or equivalent
+
         """
         self.buffers[str(self.bufid)] = VimFileBuffer(self, self.bufid)
         self.transport.write(str(self.bufid) + ':create!0\n')
@@ -168,13 +172,13 @@ class VimBeansProtocol(Protocol):
 
         This will parse a Vim message and disposition it appropriately
 
-        Parameters:
+        Args:
             message (string): The message from Vim.  Can be any message provided
                               it was for this buffer.
 
         """
 
-        log.msg('Processing %s' % (event))
+        log.msg('Processing %s', event)
         event_name, args = re.split('[ =]', event, 1)
 
         method = getattr(self, 'event_{}'.format(event_name), None)
