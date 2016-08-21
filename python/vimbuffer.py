@@ -176,7 +176,7 @@ class VimFileBuffer(FileBuffer):
 
         log.msg('method is %s' % method)
         if method:
-            method(args[1:])
+            method(args[2:])
 
     def command_hello(self, *reply):
         """
@@ -185,3 +185,9 @@ class VimFileBuffer(FileBuffer):
 
         log.msg('Hello command %s' % reply)
 
+    def command_open(self, path):
+        """
+        This command will create and watch the provided buffer.
+        If the buffer is already watched then this will just reset the buffer.
+        """
+        log.msg('Trying to open %s' % (path,))
