@@ -75,7 +75,7 @@ class VimBeansProtocol(Protocol):
             data (str): A netbeans string message from Vim.
 
         """
-        log.msg('Recieved data %s', data)
+        log.msg('Recieved data %s' % (data,))
 
         for line in data.splitlines():
 
@@ -84,8 +84,10 @@ class VimBeansProtocol(Protocol):
                     VIM_SPECIAL_MESSAGES):
                 continue
 
+            # Replies are usually '<sequence> [other]' so if you split these on
+            # ':' then you will get the same string back
             message = line.split(':', 1)
-            if message[0].isdigit():
+            if len(message) > 1 and message[0].isdigit():
                 self.buffers[message[0]].process_vim_event(message[1])
 
             # Maybe later handle Replies which use spaces but for now just
@@ -178,7 +180,7 @@ class VimBeansProtocol(Protocol):
 
         """
 
-        log.msg('Processing %s', event)
+        log.msg('Processing %s' % (event))
         event_name, args = re.split('[ =]', event, 1)
 
         method = getattr(self, 'event_{}'.format(event_name), None)
