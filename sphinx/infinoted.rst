@@ -126,6 +126,8 @@ provides a "welcome" message with the permissions.
 The Gobby clients would then send an explore node to list the files and
 directories available on the server.  
 
+.. note:: The explore needs to be done for every subdirectory.
+
 Currently not certain on the publisher attribute...
 
 .. code-block:: xml

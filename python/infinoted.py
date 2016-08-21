@@ -31,6 +31,9 @@ class InfinotedProtocol(object):
         self.directory = {'0': InfinotedDirectory('')}
         self.directory['0'].id = '0'
 
+        #: Sequences for communicating with infinoted.
+        self.sequence = 1
+
         #: dictionary of sessionnames to InfinotedFileBuffer objects.
         self.buffers = {}
         self.service = service
@@ -62,7 +65,7 @@ class InfinotedProtocol(object):
         xs.addObserver('/challenge', self.challenge, 100)
 
         xs.addObserver('/group/welcome', self.welcome)
-        xs.addObserver('/group/explore-begin', self.explore)
+        xs.addObserver('/group/explore-begin', self.explore_begin)
         xs.addObserver('/group/explore-end', self.explore_end)
         xs.addObserver('/group/subscribe-chat', self.subscribe)
         xs.addObserver('/group/subscribe-session', self.subscribe_session)
@@ -156,7 +159,7 @@ class InfinotedProtocol(object):
         node = element.firstChildElement()
         self.user_id = node['id']
 
-    def explore(self, element):
+    def explore_begin(self, element):
         """
         NOt sure if I really need to do anything here...???
         """
@@ -176,15 +179,29 @@ class InfinotedProtocol(object):
         elif node['type'] == 'InfSubdirectory':
             # import pydevd; pydevd.settrace('localhost', port=5252, stdoutToServer=True, stderrToServer=True)
             dir_ = self.directory[node['parent']].mkdir(node['name'])
-            self.directory[node['id']] = dir_  # TODO this isn't nesting correctly
+            self.directory[node['id']] = dir_
             dir_.id = node['id']
+
+            # Need to send back an explore node for sub-directories
+            self.explore(int(node['id']))
         else:
             log.msg('Non text node found: %s', node['type'])
 
-    def welcome(self, element):
-        explore_attribs = {'seq': '0', 'id': '0'}
+    def explore(self, id):
+        """
+        This will send an explore command.  This should be given for the root
+        directory, `0` and for all sub-directories.
+
+        Args:
+            id (int): The ID of the directory node to explore.
+        """
+        self.sequence += 1
+        explore_attribs = {'seq': str(self.sequence), 'id': str(id)}
         explore = domish.Element(('', 'explore-node'), attribs=explore_attribs)
-        self.send_node(explore, element['name'])
+        self.send_node(explore, 'InfDirectory')
+
+    def welcome(self, element):
+        self.explore(0)
 
     def challenge(self, element):
         def get_response(s):
