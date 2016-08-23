@@ -267,3 +267,21 @@ class InfinotedProtocol(object):
         request_node.addChild(request)
 
         self.send_node(self, request_node, name)
+
+    def watchFile(self, filename):
+        """
+        This will set up being notified of changes to `filename`
+
+        This basically sends a subscribe-session to the infinoted server
+
+        Args:
+            filename (str): The filename of the infinoted buffer to watch.
+
+        """
+        # Find the file in the directory list
+        self.sequence += 1
+        subscribe_attribs = {'seq': str(self.sequence), 'id': str(id)}
+        subscribe = domish.Element(('', 'subscribe-session'),
+                                   attribs=subscribe_attribs)
+
+        self.send_node(subscribe, 'InfDirectory')
