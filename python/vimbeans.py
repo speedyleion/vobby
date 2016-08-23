@@ -26,6 +26,7 @@ This handles communicating with Vim through the netbeans interface.
 """
 
 import re
+from textwrap import dedent
 
 from twisted.internet.protocol import Protocol, ServerFactory
 from twisted.python import log
@@ -54,11 +55,18 @@ class VimBeansProtocol(Protocol):
         #: dictionary of bufid to VimFileBuffer objects.  Uses strings to
         #: represent the entries so they can be used directly from Vim.  Note
         #: '0' is this object.
+        #: This has two keys per buffer, except for this object.  One key is the
+        #: Vim buffer number.  The other is the actual file name as retrieved
+        #: from :attr:directory.
         self.buffers = {'0': self}
 
         self.service = service
         self.service.add_protocol(self)
         self.sequence_number = 1
+
+        #: Get the directory structure from the service, this isn't ideal should
+        #: be abstracted somehow
+        self.directory = self.service.infinoted.directory['0']
 
     def dataReceived(self, data):
         """
@@ -100,6 +108,9 @@ class VimBeansProtocol(Protocol):
         This will instruct the Vim instance to notify this of changes to the
         `filename`.
 
+        TODO see how much this would actually be used, currently focusing on
+        editing infinoted files not Vim ones.
+
         Args:
             filename (str): The filename of the Vim buffer to watch.  This will
                             be the filename local to the Vim instance running
@@ -108,11 +119,13 @@ class VimBeansProtocol(Protocol):
         utilize or if they need to be.
 
         """
-        self.buffers[str(self.bufid)] = VimFileBuffer(self, self.bufid)
-        self.transport.write(str(self.bufid) + ':putBufferNumber!2 ' +
-                             filename + '\n')
+        _id = str(self.bufid)
+        self.buffers[_id] = VimFileBuffer(self, self.bufid)
+        self.write(_id + ':putBufferNumber!2 ' + filename + '\n')
+        self.write(_id + ':startDocumentListen!3\n')
 
-        self.transport.write(str(self.bufid) + ':startDocumentListen!3\n')
+        # Right now storing here.
+        self.buffers[filename] = _id
         self.bufid += 1
 
     def connectionLost(self, reason):
@@ -157,17 +170,28 @@ class VimBeansProtocol(Protocol):
                             with `:w` or equivalent
 
         """
-        self.buffers[str(self.bufid)] = VimFileBuffer(self, self.bufid)
-        self.transport.write(str(self.bufid) + ':create!0\n')
-        self.transport.write(str(self.bufid) + ':setTitle!0 "' +
-                             filename + '"\n')
-        self.transport.write(str(self.bufid) + ':setFullName!0 "' +
-                             filename + '"\n')
-        self.transport.write(str(self.bufid) + ':setCaretListener!0\n')
-        self.transport.write(str(self.bufid) + ':setModified!0 F\n')
-        self.transport.write(str(self.bufid) + ':setContentType!0\n')
-        self.transport.write(str(self.bufid) + ':startDocumentListen!0\n')
+        if filename in self.buffers:
+            return
+
+        _id = str(self.bufid)
+        self.buffers[_id] = VimFileBuffer(self, self.bufid)
+        message = """\
+                  {id}:create!0
+                  {id}:setTitle!0 "{filename}"
+                  {id}:setFullName!0 "{filename}"
+                  {id}:setCaretListener!0
+                  {id}:setModified!0 F
+                  {id}:setContentType!0
+                  {id}:startDocumentListen!0
+                  """
+
+        self.write(dedent(message.format(id=_id, filename=filename)))
+
+        # Map the filename to the buffer number
+        self.buffers[filename] = _id
         self.bufid += 1
+
+        #
 
     def process_vim_event(self, event):
         """ Handle a message from Vim
@@ -198,12 +222,8 @@ class VimBeansProtocol(Protocol):
         # Create a dummy vobby buffer
         self.new_buffer('__vobby__')
 
-        # Get the directory structure from the service, this isn't ideal should
-        # be abstracted somehow
-        self.directory = self.service.infinoted.directory['0']
-
-        # For now assume that buffer '1' is always the `__vobby__` buffer
-        self.buffers['1'].insert(str(self.directory), 0)
+        # Feed back the directory for viewing
+        self.buffers[self.buffers['__vobby__']].insert(str(self.directory), 0)
 
 
 class VimBeansFactory(ServerFactory):

@@ -65,9 +65,9 @@ class VimFileBuffer(FileBuffer):
         This will insert `content` into this buffer at `offset`.
 
         Args:
-            content (string): This is the string to insert.  It can be one
-                              character, ``a`` or it can be a full string
-                              ``Hello this is my string``.
+            content (str): This is the string to insert.  It can be one
+                           character, ``a`` or it can be a full string ``Hello
+                           this is my string``.
 
             offset (int): This is the number of characters into the buffer to
                           place `content` at.  This is a 0 based value.
@@ -95,7 +95,7 @@ class VimFileBuffer(FileBuffer):
         buffer and replace them with this new `content`.
 
         Args:
-            content (string): The entire contents of the buffer.
+            content (str): The entire contents of the buffer.
 
         """
         # HACK for now just insert it all
@@ -107,8 +107,8 @@ class VimFileBuffer(FileBuffer):
         This will parse a Vim message and disposition it appropriately
 
         Parameters:
-            message (string): The message from Vim.  Can be any message provided
-                              it was for this buffer.
+            message (str): The message from Vim.  Can be any message provided it
+                           was for this buffer.
 
         """
         event_name, args = re.split('[ =]', event, 1)
@@ -125,8 +125,8 @@ class VimFileBuffer(FileBuffer):
         Vim.
 
         Args:
-            insert_args (string): The insert argument from Vim.  Expected to be
-                                  in the form of '<offset> "content"'
+            insert_args (str): The insert argument from Vim.  Expected to be in
+                               the form of '<offset> "content"'
 
         """
         offset, content = insert_args.split(' ', 1)
@@ -143,8 +143,8 @@ class VimFileBuffer(FileBuffer):
         Vim.
 
         Args:
-            remove_args (string): The remove argument from Vim.  Expected to be
-                                  in the form of '<offset> <length>'
+            remove_args (str): The remove argument from Vim.  Expected to be in
+                               the form of '<offset> <length>'
 
         """
         offset, length = remove_args.split(' ', 1)
@@ -159,7 +159,7 @@ class VimFileBuffer(FileBuffer):
         it will be silently ignored.
 
         Args:
-            command (string): The key command to process.
+            command (str): The key command to process.
 
         """
         # First element always appears to be "0" after that strip off the quotes
@@ -189,5 +189,9 @@ class VimFileBuffer(FileBuffer):
         """
         This command will create and watch the provided buffer.
         If the buffer is already watched then this will just reset the buffer.
+
+        Args:
+            path (str): The full path to the file to open.
         """
         log.msg('Trying to open %s' % (path,))
+        self.protocol.new_buffer(path)
