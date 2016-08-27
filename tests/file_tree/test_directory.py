@@ -66,3 +66,10 @@ class TestDirectory(unittest.TestCase):
         self.root.mknod('sub_directory_2/file_1')
         self.root.mknod('sub_directory_2/file_2')
         self.root.makedirs('sub_directory_2/sub_directory_1')
+
+    def test_contains(self):
+        """
+        This tests the __contains__ method of the directory class
+
+        """
+        self.assertTrue('sub_directory_1' in self.root)

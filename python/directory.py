@@ -16,7 +16,7 @@ class Directory(object):
         """Directory and its name
 
         Args:
-            name (string): The directory name
+            name (str): The directory name
             parent (Directory): The parent directory.  Can be None if this is
                                 the root directory
 
@@ -44,7 +44,7 @@ class Directory(object):
         """Create subdirectory
 
         Args:
-            path (string): The path to make directories for.
+            path (str): The path to make directories for.
 
         Raises OSError if the directory already exists
 
@@ -63,7 +63,7 @@ class Directory(object):
         """Recursively creates subdirectories
 
         Args:
-            path (string): Subdirectory tree to create
+            path (str): Subdirectory tree to create
 
         Raises OSError if the directory already exists
 
@@ -88,7 +88,7 @@ class Directory(object):
         """Create a filename "node"
 
         Args:
-            path (string): The file to create
+            path (str): The file to create
 
         """
         # TODO rework this really this should probably be sub_dir.mknod and then
@@ -110,7 +110,7 @@ class Directory(object):
         """Remove a file
 
         Args:
-            path (string): File to remove
+            path (str): File to remove
 
         Raises OSError if path isn't a file
 
@@ -125,7 +125,7 @@ class Directory(object):
         """ Remove directory
 
         Args:
-            path (string): Directory to remove
+            path (str): Directory to remove
 
         Raises OSError if the directory isn't empty
 
@@ -141,7 +141,7 @@ class Directory(object):
     def is_file(self):
         return False
 
-    def __repr__(self):
+    def __str__(self):
         # TODO would really like this to provide an output similar to the "tree"
         # command
         # import pydevd; pydevd.settrace('localhost', port=5252, stdoutToServer=True, stderrToServer=True)
@@ -161,13 +161,40 @@ class Directory(object):
 
         return tree
 
+    def __contains__(self, path):
+        """
+        This will check if a given path is inside of the directory.
+        The path has to match from the root so if the directory has.
+
+        >>> root = Directory()
+        >>> root.makedirs('foo/bar/baz/bam')
+        >>>'foo/bar' in root
+        True
+        >>> 'bar/baz' in root
+        False
+
+        Args:
+            path (str): The path to look for.
+
+        """
+        # TODO need to make a dictionary like getter and use that.
+        sub_dirs = path.split('/', 1)
+        if len(sub_dirs) > 1:
+            # Try to get to the parent
+            try:
+                return sub_dirs[1] in self.sub_directories[sub_dirs[0]]
+            except KeyError:
+                return False
+
+        # It could be a file or a sub-directory
+        return sub_dirs[0] in self.sub_directories or sub_dirs[0] in self.files
+
     def _get_sub_directory(self, path):
         """
         This will return a nested sub directory. Or self if path is None
 
-
         Args:
-            path (string): The path to get.
+            path (str): The path to get.
 
         Returns:
             Directory
@@ -204,7 +231,7 @@ class IDEFile(object):
         """Directory and its name
 
         Args:
-            name (string): The file name
+            name (str): The file name
             parent (Directory): The parent directory.
 
         """
