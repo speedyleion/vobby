@@ -193,7 +193,7 @@ class VimBeansProtocol(Protocol):
 
         # Need to try and find the file in :attr:directory to associate
         if filename in self.directory:
-            self.service.infinoted
+            self.service.infinoted.watchFile(filename, [self.buffers[_id]])
 
     def process_vim_event(self, event):
         """ Handle a message from Vim

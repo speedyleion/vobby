@@ -114,7 +114,15 @@ class InfinotedProtocol(object):
         # TODO need to condition on InfDirectory vs chat, possibly???
         node = element.firstChildElement()
 
-        self.buffers[node['group']] = InfinotedBuffer(self, element)
+        # The buffer was already created so we'll just point to it from the
+        # group attribute as all future updates will come via that field
+        self.buffers[node['group']] = self.buffers[node['id']]
+        node = element.firstChildElement()
+
+        # Send the ack
+        subscribe_node = domish.Element(('', 'subscribe-ack'))
+        subscribe_node['id'] = node['id']
+        self.send_node(subscribe_node, 'InfDirectory')
 
     def sync_begin(self, element):
         """
@@ -268,7 +276,7 @@ class InfinotedProtocol(object):
 
         self.send_node(self, request_node, name)
 
-    def watchFile(self, filename):
+    def watchFile(self, filename, buffers=None):
         """
         This will set up being notified of changes to `filename`
 
@@ -277,11 +285,21 @@ class InfinotedProtocol(object):
         Args:
             filename (str): The filename of the infinoted buffer to watch.
 
+            buffers ([FileBuffer]): Any other buffers to associate with this
+                                    one.
+
         """
         # Find the file in the directory list
+        _id = '3'
+
         self.sequence += 1
-        subscribe_attribs = {'seq': str(self.sequence), 'id': str(id)}
+        subscribe_attribs = {'seq': str(self.sequence), 'id': _id}
         subscribe = domish.Element(('', 'subscribe-session'),
                                    attribs=subscribe_attribs)
 
         self.send_node(subscribe, 'InfDirectory')
+
+        # Create the infinoted buffer
+        self.buffers[_id] = InfinotedBuffer(self, None)
+        self.buffers['InfSession_' + _id] = self.buffesr[_id]
+        self.buffers[_id].buffers = buffers  # TODO not sure about directlly setting the attrib here
