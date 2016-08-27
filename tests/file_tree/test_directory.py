@@ -73,3 +73,9 @@ class TestDirectory(unittest.TestCase):
 
         """
         self.assertTrue('sub_directory_1' in self.root)
+        self.assertTrue('sub_directory_2/sub_directory_1' in self.root)
+        self.assertTrue('sub_directory_2/file_1' in self.root)
+
+        # TODO need a couple better false cases
+        self.assertFalse('foo' in self.root)
+        self.assertFalse('sub_directory_2/sub_directory_1/taco' in self.root)

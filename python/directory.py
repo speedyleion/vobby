@@ -166,6 +166,8 @@ class Directory(object):
         This will check if a given path is inside of the directory.
         The path has to match from the root so if the directory has.
 
+        .. warning:: This doesn't handle '/blah' right now
+
         >>> root = Directory()
         >>> root.makedirs('foo/bar/baz/bam')
         >>>'foo/bar' in root
