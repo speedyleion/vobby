@@ -99,6 +99,7 @@ class VimFileBuffer(FileBuffer):
 
         """
         # HACK for now just insert it all
+        # import pydevd; pydevd.settrace('localhost', port=5252, stdoutToServer=True, stderrToServer=True)
         self.insert(content, 0, None)
 
     def process_vim_event(self, event):

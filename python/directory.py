@@ -167,7 +167,7 @@ class Directory(object):
         strings
 
         """
-        import pydevd; pydevd.settrace('localhost', port=5252, stdoutToServer=True, stderrToServer=True)
+        # import pydevd; pydevd.settrace('localhost', port=5252, stdoutToServer=True, stderrToServer=True)
         sub_dirs = key.split('/', 1)
         if len(sub_dirs) > 1:
             try:

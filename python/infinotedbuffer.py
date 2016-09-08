@@ -152,4 +152,4 @@ class InfinotedBuffer(FileBuffer):
         """
         content_node = element.firstChildElement()
         for buf in self.buffers:
-            buf.sync(content_node.content)
+            buf.sync(str(content_node))
