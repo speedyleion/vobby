@@ -170,6 +170,7 @@ class VimBeansProtocol(Protocol):
                             with `:w` or equivalent
 
         """
+        # import pydevd; pydevd.settrace('localhost', port=5252, stdoutToServer=True, stderrToServer=True)
         if filename in self.buffers:
             return
 

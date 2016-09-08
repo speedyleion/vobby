@@ -161,6 +161,25 @@ class Directory(object):
 
         return tree
 
+    def __getitem__(self, key):
+        """
+        This allows for looking up files and directories by dictionary style
+        strings
+
+        """
+        import pydevd; pydevd.settrace('localhost', port=5252, stdoutToServer=True, stderrToServer=True)
+        sub_dirs = key.split('/', 1)
+        if len(sub_dirs) > 1:
+            try:
+                return self.sub_directories[sub_dirs[0]][sub_dirs[1]]
+            except KeyError:
+                raise KeyError(key)
+
+        try:
+            return self.sub_directories[sub_dirs[0]]
+        except KeyError:
+            return self.files[sub_dirs[0]]
+
     def __contains__(self, path):
         """
         This will check if a given path is inside of the directory.

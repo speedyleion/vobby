@@ -117,6 +117,7 @@ class InfinotedProtocol(object):
         # The buffer was already created so we'll just point to it from the
         # group attribute as all future updates will come via that field
         self.buffers[node['group']] = self.buffers[node['id']]
+        self.buffers[node['group']].session = node['group']
         node = element.firstChildElement()
 
         # Send the ack
@@ -290,7 +291,8 @@ class InfinotedProtocol(object):
 
         """
         # Find the file in the directory list
-        _id = '3'
+        # import pydevd; pydevd.settrace('localhost', port=5252, stdoutToServer=True, stderrToServer=True)
+        _id = self.directory['0'][filename].id
 
         self.sequence += 1
         subscribe_attribs = {'seq': str(self.sequence), 'id': _id}
@@ -301,5 +303,9 @@ class InfinotedProtocol(object):
 
         # Create the infinoted buffer
         self.buffers[_id] = InfinotedBuffer(self, None)
-        self.buffers['InfSession_' + _id] = self.buffesr[_id]
-        self.buffers[_id].buffers = buffers  # TODO not sure about directlly setting the attrib here
+        # self.buffers['InfSession_' + _id] = self.buffesr[_id]
+
+        # TODO not sure about directlly setting the attrib here
+        self.buffers[_id].buffers = buffers
+        for buf in buffers:
+            buf.buffers.append(self.buffers[_id])

@@ -194,4 +194,7 @@ class VimFileBuffer(FileBuffer):
             path (str): The full path to the file to open.
         """
         log.msg('Trying to open %s' % (path,))
-        self.protocol.new_buffer(path)
+
+        if len(path) != 1:
+            raise TypeError("Only one file can be opened")
+        self.protocol.new_buffer(path[0])
