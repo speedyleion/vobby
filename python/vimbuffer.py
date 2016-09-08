@@ -81,11 +81,29 @@ class VimFileBuffer(FileBuffer):
                             different colors.
 
         """
+        content = self._normalize(content)
         message = '{}:insert/{} {} "{}"\n'.format(self.bufid,
                                                   self.protocol.get_sequence_no(),
                                                   offset,
-                                                  content.replace('\n', '\\n'))
+                                                  content)
         self.protocol.write(message)
+
+    def _normalize(self, raw_string):
+        """
+        This will "normalize" a string for Vim.  Basically it will escape any
+        characters that need to be escaped for Vim to properly interperet.
+
+        Args:
+            raw_string (str): The raw string needing to be normalized.
+
+        Returns (str): A string with the necessary characters escaped.
+        """
+        new_string = raw_string
+        SPECIAL_CHARS = [('\n', '\\n'), ('"', '\\"')]
+        for char_map in SPECIAL_CHARS:
+            new_string = new_string.replace(char_map[0], char_map[1])
+
+        return new_string
 
     def sync(self, content):
         """
